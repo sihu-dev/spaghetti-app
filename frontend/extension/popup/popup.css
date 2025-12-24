@@ -64,6 +64,37 @@ body {
   margin-top: 4px;
 }
 
+/* Capture Section */
+.capture-section {
+  margin-bottom: 16px;
+}
+
+.capture-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.capture-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.capture-btn .btn-icon {
+  font-size: 18px;
+}
+
 /* Upload Section */
 .upload-section {
   margin-bottom: 16px;
@@ -211,9 +242,9 @@ body {
 
 .color-palette {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .color-swatch {
@@ -221,19 +252,21 @@ body {
   border-radius: 8px;
   cursor: pointer;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
   border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .color-swatch:hover {
-  transform: scale(1.1);
-  border-color: white;
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .color-swatch::after {
   content: attr(data-color);
   position: absolute;
-  bottom: -20px;
+  bottom: -22px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 10px;
@@ -241,10 +274,19 @@ body {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .color-swatch:hover::after {
   opacity: 1;
+}
+
+.palette-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 16px;
+  font-style: italic;
 }
 
 /* Theme Actions */

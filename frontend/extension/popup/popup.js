@@ -1,65 +1,93 @@
-// API 설정
-const API_BASE_URL = 'http://localhost:3000/api';
+// Import modules
+import { extractColors } from '../lib/color-extractor.js';
+import { generateDesignTokens } from '../lib/token-generator.js';
 
 // DOM 요소
+const captureBtn = document.getElementById('captureBtn');
 const uploadArea = document.getElementById('uploadArea');
 const imageInput = document.getElementById('imageInput');
-const imageUrl = document.getElementById('imageUrl');
 const previewImage = document.getElementById('previewImage');
 const extractBtn = document.getElementById('extractBtn');
 const loadingState = document.getElementById('loadingState');
 const resultSection = document.getElementById('resultSection');
 const colorPalette = document.getElementById('colorPalette');
-const applyThemeBtn = document.getElementById('applyThemeBtn');
-const copyThemeBtn = document.getElementById('copyThemeBtn');
-const saveThemeBtn = document.getElementById('saveThemeBtn');
+const downloadTokenBtn = document.getElementById('downloadTokenBtn');
+const copyTokenBtn = document.getElementById('copyTokenBtn');
 const openSidePanelBtn = document.getElementById('openSidePanelBtn');
 const openOptionsBtn = document.getElementById('openOptionsBtn');
 
-let currentImageFile = null;
-let currentTheme = null;
+let currentImageSource = null;
+let currentColors = null;
+let currentTokens = null;
 
 // 초기화
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   setupEventListeners();
-  await loadSavedTheme();
+  await loadSavedColors();
 }
 
 function setupEventListeners() {
+  // 캡처 버튼
+  captureBtn.addEventListener('click', captureScreenshot);
+
   // 업로드 영역 클릭
   uploadArea.addEventListener('click', () => imageInput.click());
-  
+
   // 파일 선택
   imageInput.addEventListener('change', handleFileSelect);
-  
+
   // 드래그 앤 드롭
   uploadArea.addEventListener('dragover', handleDragOver);
   uploadArea.addEventListener('dragleave', handleDragLeave);
   uploadArea.addEventListener('drop', handleDrop);
-  
-  // URL 입력
-  imageUrl.addEventListener('input', handleUrlInput);
-  
+
   // 추출 버튼
-  extractBtn.addEventListener('click', extractTheme);
-  
-  // 테마 액션 버튼
-  applyThemeBtn.addEventListener('click', applyTheme);
-  copyThemeBtn.addEventListener('click', copyTheme);
-  saveThemeBtn.addEventListener('click', saveTheme);
-  
+  extractBtn.addEventListener('click', extractColorsFromImage);
+
+  // 토큰 액션 버튼
+  downloadTokenBtn.addEventListener('click', downloadTokens);
+  copyTokenBtn.addEventListener('click', copyTokens);
+
   // 푸터 버튼
   openSidePanelBtn.addEventListener('click', openSidePanel);
   openOptionsBtn.addEventListener('click', openOptions);
+}
+
+// 스크린샷 캡처
+async function captureScreenshot() {
+  try {
+    showLoading(true, '페이지 캡처 중...');
+
+    // 현재 탭의 스크린샷 캡처
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
+      format: 'png',
+      quality: 100
+    });
+
+    // 미리보기 표시
+    currentImageSource = dataUrl;
+    previewImage.src = dataUrl;
+    previewImage.classList.remove('hidden');
+    document.querySelector('.upload-content').classList.add('hidden');
+
+    updateExtractButton();
+    showToast('페이지 캡처 완료!', 'success');
+  } catch (error) {
+    console.error('Screenshot capture error:', error);
+    showToast('스크린샷 캡처 실패: ' + error.message, 'error');
+  } finally {
+    showLoading(false);
+  }
 }
 
 // 파일 선택 핸들러
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (file && file.type.startsWith('image/')) {
-    currentImageFile = file;
+    currentImageSource = file;
     showPreview(file);
     updateExtractButton();
   }
@@ -81,25 +109,13 @@ function handleDragLeave(e) {
 function handleDrop(e) {
   e.preventDefault();
   uploadArea.classList.remove('dragover');
-  
+
   const file = e.dataTransfer.files[0];
   if (file && file.type.startsWith('image/')) {
-    currentImageFile = file;
+    currentImageSource = file;
     showPreview(file);
     updateExtractButton();
   }
-}
-
-// URL 입력 핸들러
-function handleUrlInput(e) {
-  const url = e.target.value.trim();
-  if (url) {
-    currentImageFile = null;
-    previewImage.src = url;
-    previewImage.classList.remove('hidden');
-    document.querySelector('.upload-content').classList.add('hidden');
-  }
-  updateExtractButton();
 }
 
 // 미리보기 표시
@@ -115,140 +131,144 @@ function showPreview(file) {
 
 // 추출 버튼 상태 업데이트
 function updateExtractButton() {
-  const hasImage = currentImageFile || imageUrl.value.trim();
+  const hasImage = currentImageSource !== null;
   extractBtn.disabled = !hasImage;
 }
 
-// 테마 추출
-async function extractTheme() {
+// 색상 추출 (로컬 처리)
+async function extractColorsFromImage() {
   try {
-    showLoading(true);
-    
-    const formData = new FormData();
-    
-    if (currentImageFile) {
-      formData.append('image', currentImageFile);
-    } else if (imageUrl.value.trim()) {
-      formData.append('imageUrl', imageUrl.value.trim());
+    if (!currentImageSource) {
+      showToast('이미지를 선택해주세요', 'error');
+      return;
     }
-    
-    const response = await fetch(`${API_BASE_URL}/theme/extract`, {
-      method: 'POST',
-      body: formData
+
+    showLoading(true, '색상 추출 중...');
+
+    // 색상 추출 (Canvas API 사용)
+    const colorObjects = await extractColors(currentImageSource, {
+      colorCount: 8,
+      quality: 5,
+      excludeWhite: true,
+      excludeBlack: true
     });
-    
-    if (!response.ok) {
-      throw new Error('테마 추출 실패');
-    }
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      currentTheme = result.data;
-      displayTheme(currentTheme);
-      showToast('테마가 성공적으로 추출되었습니다!', 'success');
-    } else {
-      throw new Error(result.error || '알 수 없는 오류');
-    }
+
+    // HEX 색상만 추출
+    currentColors = colorObjects.map(c => c.hex);
+
+    // 디자인 토큰 생성
+    currentTokens = generateDesignTokens(colorObjects, {
+      format: 'json',
+      prefix: 'color',
+      generateShades: true
+    });
+
+    // 결과 표시
+    displayColors(currentColors);
+
+    // 저장
+    await saveColors(currentColors, currentTokens);
+
+    showToast(`${currentColors.length}개 색상이 추출되었습니다!`, 'success');
   } catch (error) {
-    console.error('Theme extraction error:', error);
-    showToast(error.message, 'error');
+    console.error('Color extraction error:', error);
+    showToast('색상 추출 실패: ' + error.message, 'error');
   } finally {
     showLoading(false);
   }
 }
 
-// 테마 표시
-function displayTheme(theme) {
+// 색상 팔레트 표시
+function displayColors(colors) {
   resultSection.classList.remove('hidden');
   colorPalette.innerHTML = '';
-  
-  const colors = theme.colors || [];
+
   colors.forEach(color => {
     const swatch = document.createElement('div');
     swatch.className = 'color-swatch';
     swatch.style.backgroundColor = color;
     swatch.setAttribute('data-color', color);
-    swatch.addEventListener('click', () => copyToClipboard(color));
+    swatch.title = `클릭하여 ${color} 복사`;
+
+    swatch.addEventListener('click', async () => {
+      await copyToClipboard(color);
+      showToast(`${color} 복사됨!`, 'success');
+    });
+
     colorPalette.appendChild(swatch);
   });
 }
 
-// 테마 적용
-async function applyTheme() {
-  if (!currentTheme) return;
-  
+// 토큰 다운로드 (JSON 파일)
+async function downloadTokens() {
+  if (!currentTokens) {
+    showToast('추출된 색상이 없습니다', 'error');
+    return;
+  }
+
   try {
-    // 현재 탭에 테마 적용
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: injectTheme,
-      args: [currentTheme]
+    const json = JSON.stringify(currentTokens, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const filename = `spaghetti-tokens-${timestamp}.json`;
+
+    // 다운로드
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+    showToast('토큰이 다운로드되었습니다!', 'success');
+  } catch (error) {
+    console.error('Download error:', error);
+    showToast('다운로드 실패', 'error');
+  }
+}
+
+// 토큰 JSON 복사
+async function copyTokens() {
+  if (!currentTokens) {
+    showToast('추출된 색상이 없습니다', 'error');
+    return;
+  }
+
+  try {
+    const json = JSON.stringify(currentTokens, null, 2);
+    await copyToClipboard(json);
+    showToast('토큰 JSON이 복사되었습니다!', 'success');
+  } catch (error) {
+    console.error('Copy error:', error);
+    showToast('복사 실패', 'error');
+  }
+}
+
+// 색상 저장
+async function saveColors(colors, tokens) {
+  try {
+    await chrome.storage.local.set({
+      lastColors: colors,
+      lastTokens: tokens,
+      lastUpdated: new Date().toISOString()
     });
-    
-    showToast('테마가 적용되었습니다!', 'success');
   } catch (error) {
-    console.error('Apply theme error:', error);
-    showToast('테마 적용 실패', 'error');
+    console.error('Save colors error:', error);
   }
 }
 
-// 페이지에 테마 주입
-function injectTheme(theme) {
-  const root = document.documentElement;
-  const colors = theme.colors || [];
-  
-  if (colors.length >= 5) {
-    root.style.setProperty('--ai-spaghetti-primary', colors[0]);
-    root.style.setProperty('--ai-spaghetti-secondary', colors[1]);
-    root.style.setProperty('--ai-spaghetti-accent', colors[2]);
-    root.style.setProperty('--ai-spaghetti-background', colors[3]);
-    root.style.setProperty('--ai-spaghetti-text', colors[4]);
-  }
-}
-
-// 테마 복사
-async function copyTheme() {
-  if (!currentTheme) return;
-  
-  const themeJson = JSON.stringify(currentTheme, null, 2);
-  await copyToClipboard(themeJson);
-  showToast('테마가 클립보드에 복사되었습니다!', 'success');
-}
-
-// 테마 저장
-async function saveTheme() {
-  if (!currentTheme) return;
-  
+// 저장된 색상 로드
+async function loadSavedColors() {
   try {
-    const savedThemes = await chrome.storage.local.get('themes');
-    const themes = savedThemes.themes || [];
-    
-    currentTheme.id = Date.now();
-    currentTheme.savedAt = new Date().toISOString();
-    
-    themes.push(currentTheme);
-    await chrome.storage.local.set({ themes });
-    
-    showToast('테마가 저장되었습니다!', 'success');
-  } catch (error) {
-    console.error('Save theme error:', error);
-    showToast('테마 저장 실패', 'error');
-  }
-}
-
-// 저장된 테마 로드
-async function loadSavedTheme() {
-  try {
-    const result = await chrome.storage.local.get('currentTheme');
-    if (result.currentTheme) {
-      currentTheme = result.currentTheme;
-      displayTheme(currentTheme);
+    const result = await chrome.storage.local.get(['lastColors', 'lastTokens']);
+    if (result.lastColors && result.lastColors.length > 0) {
+      currentColors = result.lastColors;
+      currentTokens = result.lastTokens;
+      displayColors(currentColors);
     }
   } catch (error) {
-    console.error('Load theme error:', error);
+    console.error('Load colors error:', error);
   }
 }
 
@@ -283,9 +303,13 @@ async function copyToClipboard(text) {
 }
 
 // 로딩 상태 표시
-function showLoading(show) {
+function showLoading(show, message = '색상을 분석 중...') {
+  if (show) {
+    loadingState.querySelector('p').textContent = message;
+  }
   loadingState.classList.toggle('hidden', !show);
   extractBtn.disabled = show;
+  captureBtn.disabled = show;
 }
 
 // 토스트 알림 표시
