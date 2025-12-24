@@ -1,0 +1,16 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "description": "Claude AI와 연동하여 이미지에서 테마 색상을 추출하고 웹페이지에 적용하는 Chrome 확장 프로그램입니다.",
+  "main": "generate-icons.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "canvas": "^3.2.0"
+  }
+}
