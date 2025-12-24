@@ -1,59 +1,47 @@
 import { Request, Response } from 'express';
 import { createAssembly, findAssemblyById } from '../services/assembly.service';
 import { AssemblyGenerationRequest } from '../types';
+import { ApiError } from '../middleware/errorHandler';
 
 export const generateAssembly = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { templateId, themeId, customizations }: AssemblyGenerationRequest = req.body;
+  const { templateId, themeId, customizations }: AssemblyGenerationRequest = req.body;
 
-    if (!templateId || !themeId) {
-      res.status(400).json({
-        error: 'templateId and themeId are required'
-      });
-      return;
-    }
-
-    const assembly = await createAssembly({
-      templateId,
-      themeId,
-      customizations
-    });
-
-    res.status(201).json({
-      success: true,
-      data: assembly
-    });
-  } catch (error) {
-    console.error('Assembly generation error:', error);
-    res.status(500).json({
-      error: 'Failed to generate assembly',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+  // Validation is now handled by middleware, but keep defensive check
+  if (!templateId || !themeId) {
+    throw ApiError.badRequest('templateId and themeId are required', 'MISSING_REQUIRED_FIELDS');
   }
+
+  const assembly = await createAssembly({
+    templateId,
+    themeId,
+    customizations
+  });
+
+  if (!assembly) {
+    throw ApiError.internal('Failed to generate assembly', 'ASSEMBLY_GENERATION_FAILED');
+  }
+
+  res.status(201).json({
+    success: true,
+    data: assembly
+  });
 };
 
 export const getAssembly = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const assembly = await findAssemblyById(id);
-
-    if (!assembly) {
-      res.status(404).json({
-        error: 'Assembly not found'
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: assembly
-    });
-  } catch (error) {
-    console.error('Get assembly error:', error);
-    res.status(500).json({
-      error: 'Failed to get assembly',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+  if (!id) {
+    throw ApiError.badRequest('Assembly ID is required', 'MISSING_ID');
   }
+
+  const assembly = await findAssemblyById(id);
+
+  if (!assembly) {
+    throw ApiError.notFound(`Assembly with ID '${id}' not found`, 'ASSEMBLY_NOT_FOUND');
+  }
+
+  res.status(200).json({
+    success: true,
+    data: assembly
+  });
 };

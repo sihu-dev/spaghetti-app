@@ -3,85 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Spaghetti - Side Panel</title>
-  <style>
-    :root {
-      --primary: #6366f1;
-      --bg: #0f0f23;
-      --surface: #1a1a2e;
-      --text: #ffffff;
-      --text-secondary: #a0a0b0;
-      --border: #2d2d4a;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, sans-serif;
-      padding: 16px;
-      min-height: 100vh;
-    }
-    .header { text-align: center; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-    .logo { font-size: 40px; }
-    h1 { font-size: 18px; color: var(--primary); margin-top: 8px; }
-    .section { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .section-title { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px; }
-    .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-    .color-item { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
-    .color-item:hover { transform: scale(1.1); border-color: white; }
-    .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 8px; }
-    .btn:hover { opacity: 0.9; }
-    .btn.secondary { background: var(--border); }
-    .empty { color: var(--text-secondary); text-align: center; padding: 24px; }
-  </style>
+  <title>AI Spaghetti - Theme Manager</title>
+  <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
-  <header class="header">
-    <div class="logo">🍝</div>
-    <h1>AI Spaghetti</h1>
-  </header>
-  
-  <section class="section">
-    <h2 class="section-title">현재 테마</h2>
-    <div id="currentTheme" class="color-grid">
-      <p class="empty">테마 없음</p>
-    </div>
-    <button id="captureBtn" class="btn">📸 현재 페이지에서 추출</button>
-  </section>
-  
-  <section class="section">
-    <h2 class="section-title">저장된 테마</h2>
-    <div id="savedThemes">
-      <p class="empty">저장된 테마 없음</p>
-    </div>
-  </section>
-  
-  <button id="openPopupBtn" class="btn secondary">🔧 전체 설정 열기</button>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🍝</div>
+      <h1>AI Spaghetti</h1>
+      <p class="subtitle">Theme Manager</p>
+    </header>
 
-  <script>
-    document.getElementById('captureBtn').addEventListener('click', async () => {
-      const response = await chrome.runtime.sendMessage({ type: 'CAPTURE_TAB' });
-      if (response.success) {
-        await chrome.runtime.sendMessage({ type: 'EXTRACT_THEME', data: { imageBase64: response.imageBase64 }});
-        loadCurrentTheme();
-      }
-    });
-    
-    document.getElementById('openPopupBtn').addEventListener('click', () => {
-      chrome.runtime.openOptionsPage();
-    });
-    
-    async function loadCurrentTheme() {
-      const result = await chrome.storage.local.get('currentTheme');
-      const container = document.getElementById('currentTheme');
-      if (result.currentTheme?.colors) {
-        container.innerHTML = result.currentTheme.colors.slice(0, 5).map(c => 
-          `<div class="color-item" style="background:${c}" title="${c}"></div>`
-        ).join('');
-      }
-    }
-    
-    loadCurrentTheme();
-  </script>
+    <!-- Search/Filter Bar -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="테마 검색...">
+        <button id="clearSearchBtn" class="clear-btn hidden">✕</button>
+      </div>
+      <div class="filter-options">
+        <button class="filter-btn active" data-filter="all">전체</button>
+        <button class="filter-btn" data-filter="recent">최근</button>
+        <button class="filter-btn" data-filter="favorites">즐겨찾기</button>
+      </div>
+    </div>
+
+    <!-- Current Theme Section -->
+    <section class="current-theme-section">
+      <div class="section-header">
+        <h2 class="section-title">현재 테마</h2>
+        <button id="captureBtn" class="icon-btn" title="현재 페이지에서 추출">📸</button>
+      </div>
+
+      <div id="currentThemeContent" class="current-theme-content">
+        <div class="empty-state">
+          <span class="empty-icon">🎨</span>
+          <p>테마가 선택되지 않았습니다</p>
+          <small>페이지에서 테마를 추출하거나 저장된 테마를 선택하세요</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theme History List -->
+    <section class="themes-section">
+      <div class="section-header">
+        <h2 class="section-title">저장된 테마 (<span id="themeCount">0</span>)</h2>
+        <button id="refreshBtn" class="icon-btn" title="새로고침">🔄</button>
+      </div>
+
+      <div id="themesList" class="themes-list">
+        <!-- Theme cards will be dynamically inserted here -->
+      </div>
+
+      <div id="emptyThemes" class="empty-state hidden">
+        <span class="empty-icon">📦</span>
+        <p>저장된 테마가 없습니다</p>
+        <small>팝업에서 테마를 추출하고 저장하세요</small>
+      </div>
+    </section>
+
+    <!-- Quick Actions Footer -->
+    <footer class="footer">
+      <button id="openPopupBtn" class="footer-btn">
+        <span>🎨</span>
+        테마 추출
+      </button>
+      <button id="openOptionsBtn" class="footer-btn">
+        <span>⚙️</span>
+        설정
+      </button>
+    </footer>
+  </div>
+
+  <!-- Theme Preview Modal -->
+  <div id="previewModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="previewTitle">테마 미리보기</h3>
+        <button id="closePreviewBtn" class="close-btn">✕</button>
+      </div>
+      <div id="previewBody" class="modal-body">
+        <!-- Preview content will be inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button id="previewApplyBtn" class="modal-btn primary">적용</button>
+        <button id="previewCopyBtn" class="modal-btn secondary">CSS 복사</button>
+        <button id="previewDeleteBtn" class="modal-btn danger">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="sidepanel.js"></script>
 </body>
 </html>

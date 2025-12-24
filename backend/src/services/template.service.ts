@@ -70,6 +70,207 @@ const mockTemplates: Template[] = [
       hasValidation: true
     },
     createdAt: new Date('2024-01-01')
+  },
+  // Additional Hero Sections
+  {
+    id: 'hero-2',
+    name: 'Hero Section - Split Layout',
+    category: 'hero',
+    description: 'Split layout hero with image on left and content on right',
+    previewImage: '/previews/hero-split.png',
+    componentType: 'HeroSection',
+    props: {
+      layout: 'split',
+      imagePosition: 'left',
+      hasImage: true,
+      hasCTA: true,
+      backgroundColor: 'gradient'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'hero-3',
+    name: 'Hero Section - Video Background',
+    category: 'hero',
+    description: 'Full-screen hero with video background and overlay',
+    previewImage: '/previews/hero-video.png',
+    componentType: 'HeroSection',
+    props: {
+      layout: 'fullscreen',
+      hasVideo: true,
+      hasOverlay: true,
+      overlayOpacity: 0.5,
+      hasCTA: true,
+      textAlign: 'center'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'hero-4',
+    name: 'Hero Section - Minimal Typography',
+    category: 'hero',
+    description: 'Minimalist hero section with large typography and subtle animations',
+    previewImage: '/previews/hero-minimal.png',
+    componentType: 'HeroSection',
+    props: {
+      layout: 'minimal',
+      hasImage: false,
+      hasCTA: true,
+      typography: 'large',
+      hasAnimation: true,
+      backgroundColor: 'solid'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  // Additional Navigation
+  {
+    id: 'navbar-2',
+    name: 'Navigation Bar - Sidebar',
+    category: 'navigation',
+    description: 'Vertical sidebar navigation with collapsible sections',
+    previewImage: '/previews/navbar-sidebar.png',
+    componentType: 'NavBar',
+    props: {
+      layout: 'sidebar',
+      position: 'fixed',
+      collapsible: true,
+      hasSearch: true,
+      width: '250px'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'navbar-3',
+    name: 'Navigation Bar - Mega Menu',
+    category: 'navigation',
+    description: 'Horizontal navigation with dropdown mega menu sections',
+    previewImage: '/previews/navbar-mega.png',
+    componentType: 'NavBar',
+    props: {
+      layout: 'horizontal',
+      hasMegaMenu: true,
+      hasSearch: true,
+      position: 'sticky',
+      dropdownStyle: 'mega'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  // Additional Cards
+  {
+    id: 'card-2',
+    name: 'Pricing Card',
+    category: 'card',
+    description: 'Pricing card with plan details, features list, and CTA button',
+    previewImage: '/previews/card-pricing.png',
+    componentType: 'Card',
+    props: {
+      hasIcon: false,
+      hasButton: true,
+      hasBadge: true,
+      elevation: 'high',
+      features: true,
+      highlighted: false
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'card-3',
+    name: 'Team Member Card',
+    category: 'card',
+    description: 'Team member card with photo, name, role, and social links',
+    previewImage: '/previews/card-team.png',
+    componentType: 'Card',
+    props: {
+      hasImage: true,
+      hasIcon: false,
+      hasButton: false,
+      hasSocialLinks: true,
+      elevation: 'medium',
+      imageShape: 'circle'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'card-4',
+    name: 'Testimonial Card',
+    category: 'card',
+    description: 'Testimonial card with quote, author details, and rating',
+    previewImage: '/previews/card-testimonial.png',
+    componentType: 'Card',
+    props: {
+      hasIcon: true,
+      hasImage: true,
+      hasButton: false,
+      hasRating: true,
+      elevation: 'low',
+      quoteStyle: 'modern'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  // Section Templates
+  {
+    id: 'features-1',
+    name: 'Features Section - Grid',
+    category: 'section',
+    description: '3-column feature grid with icons, titles, and descriptions',
+    previewImage: '/previews/section-features.png',
+    componentType: 'Section',
+    props: {
+      layout: 'grid',
+      columns: 3,
+      hasIcons: true,
+      iconStyle: 'outlined',
+      alignment: 'center'
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'cta-1',
+    name: 'Call-to-Action Banner',
+    category: 'section',
+    description: 'Full-width CTA banner with headline, description, and action buttons',
+    previewImage: '/previews/section-cta.png',
+    componentType: 'Section',
+    props: {
+      layout: 'centered',
+      hasBackground: true,
+      backgroundStyle: 'gradient',
+      buttonCount: 2,
+      hasImage: false
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'stats-1',
+    name: 'Statistics Section',
+    category: 'section',
+    description: 'Statistics section with animated counters and labels',
+    previewImage: '/previews/section-stats.png',
+    componentType: 'Section',
+    props: {
+      layout: 'grid',
+      columns: 4,
+      hasAnimation: true,
+      animationType: 'counter',
+      hasIcons: true
+    },
+    createdAt: new Date('2024-01-15')
+  },
+  {
+    id: 'gallery-1',
+    name: 'Image Gallery Grid',
+    category: 'section',
+    description: 'Responsive image gallery grid with lightbox functionality',
+    previewImage: '/previews/section-gallery.png',
+    componentType: 'Section',
+    props: {
+      layout: 'masonry',
+      columns: 3,
+      hasLightbox: true,
+      imageRatio: 'auto',
+      gap: 'medium'
+    },
+    createdAt: new Date('2024-01-15')
   }
 ];
 

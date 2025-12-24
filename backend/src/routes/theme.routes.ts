@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { extractTheme } from '../controllers/theme.controller';
+import { asyncHandler } from '../middleware/errorHandler';
+import { validateThemeExtraction } from '../middleware/validator';
 
 const router = Router();
 
@@ -20,6 +22,11 @@ const upload = multer({
 });
 
 // POST /api/theme/extract - 이미지에서 테마 추출
-router.post('/extract', upload.single('image'), extractTheme);
+router.post(
+  '/extract',
+  upload.single('image'),
+  asyncHandler(validateThemeExtraction),
+  asyncHandler(extractTheme)
+);
 
 export default router;
