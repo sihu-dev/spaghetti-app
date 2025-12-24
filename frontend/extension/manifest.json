@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "AI Spaghetti - Chrome Theme Extractor",
+  "version": "1.0.0",
+  "description": "Claude AI와 연동하여 이미지에서 테마 색상을 추출하고 크롬을 최적화합니다.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "contextMenus",
+    "notifications",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "https://*.github.dev/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "AI Spaghetti Theme Extractor"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_page": "options/options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "commands": {
+    "extract-theme": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "현재 페이지에서 테마 추출"
+    }
+  }
+}

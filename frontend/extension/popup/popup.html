@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Spaghetti Theme Extractor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">🍝</div>
+      <h1>AI Spaghetti</h1>
+      <p class="subtitle">Theme Extractor</p>
+    </header>
+
+    <main class="main-content">
+      <!-- 이미지 업로드 섹션 -->
+      <section class="upload-section">
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="imageInput" accept="image/*" hidden>
+          <div class="upload-content">
+            <span class="upload-icon">📷</span>
+            <p>이미지를 드래그하거나 클릭하여 업로드</p>
+          </div>
+          <img id="previewImage" class="preview-image hidden" alt="Preview">
+        </div>
+        
+        <div class="url-input-wrapper">
+          <input type="url" id="imageUrl" placeholder="또는 이미지 URL 입력..." class="url-input">
+        </div>
+      </section>
+
+      <!-- 추출 버튼 -->
+      <button id="extractBtn" class="extract-btn" disabled>
+        <span class="btn-icon">🎨</span>
+        테마 추출하기
+      </button>
+
+      <!-- 로딩 상태 -->
+      <div id="loadingState" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Claude AI가 테마를 분석 중...</p>
+      </div>
+
+      <!-- 결과 섹션 -->
+      <section id="resultSection" class="result-section hidden">
+        <h2>추출된 테마</h2>
+        <div class="color-palette" id="colorPalette"></div>
+        
+        <div class="theme-actions">
+          <button id="applyThemeBtn" class="action-btn primary">
+            ✨ 테마 적용
+          </button>
+          <button id="copyThemeBtn" class="action-btn secondary">
+            📋 복사
+          </button>
+          <button id="saveThemeBtn" class="action-btn secondary">
+            💾 저장
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="openSidePanelBtn" class="footer-btn">
+        📐 사이드 패널 열기
+      </button>
+      <button id="openOptionsBtn" class="footer-btn">
+        ⚙️ 설정
+      </button>
+    </footer>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

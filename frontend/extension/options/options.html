@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Spaghetti - 설정</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">🍝</div>
+      <h1>AI Spaghetti 설정</h1>
+    </header>
+
+    <main class="settings-container">
+      <!-- 일반 설정 -->
+      <section class="settings-section">
+        <h2>일반</h2>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="autoApply">자동 테마 적용</label>
+            <p class="setting-description">페이지 로드 시 저장된 테마를 자동으로 적용합니다.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="autoApply">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="notifications">알림 활성화</label>
+            <p class="setting-description">테마 추출 완료 시 알림을 표시합니다.</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifications">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- API 설정 -->
+      <section class="settings-section">
+        <h2>API 설정</h2>
+        
+        <div class="setting-item vertical">
+          <label for="apiUrl">API 서버 URL</label>
+          <input type="url" id="apiUrl" class="text-input" placeholder="http://localhost:3000/api">
+        </div>
+      </section>
+
+      <!-- 테마 설정 -->
+      <section class="settings-section">
+        <h2>외관</h2>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>확장 프로그램 테마</label>
+          </div>
+          <select id="extensionTheme" class="select-input">
+            <option value="dark">다크 모드</option>
+            <option value="light">라이트 모드</option>
+            <option value="system">시스템 설정</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- 저장된 테마 -->
+      <section class="settings-section">
+        <h2>저장된 테마</h2>
+        <div id="savedThemes" class="saved-themes-list">
+          <p class="empty-message">저장된 테마가 없습니다.</p>
+        </div>
+      </section>
+
+      <!-- 데이터 관리 -->
+      <section class="settings-section">
+        <h2>데이터 관리</h2>
+        
+        <div class="button-group">
+          <button id="exportData" class="btn secondary">
+            📤 데이터 내보내기
+          </button>
+          <button id="importData" class="btn secondary">
+            📥 데이터 가져오기
+          </button>
+          <button id="clearData" class="btn danger">
+            🗑️ 모든 데이터 삭제
+          </button>
+        </div>
+        <input type="file" id="importFile" accept=".json" hidden>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>AI Spaghetti v1.0.0 | Made with ❤️ by Claude</p>
+    </footer>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Spaghetti - Side Panel</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --bg: #0f0f23;
+      --surface: #1a1a2e;
+      --text: #ffffff;
+      --text-secondary: #a0a0b0;
+      --border: #2d2d4a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      padding: 16px;
+      min-height: 100vh;
+    }
+    .header { text-align: center; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .logo { font-size: 40px; }
+    h1 { font-size: 18px; color: var(--primary); margin-top: 8px; }
+    .section { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .section-title { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px; }
+    .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .color-item { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+    .color-item:hover { transform: scale(1.1); border-color: white; }
+    .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 8px; }
+    .btn:hover { opacity: 0.9; }
+    .btn.secondary { background: var(--border); }
+    .empty { color: var(--text-secondary); text-align: center; padding: 24px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🍝</div>
+    <h1>AI Spaghetti</h1>
+  </header>
+  
+  <section class="section">
+    <h2 class="section-title">현재 테마</h2>
+    <div id="currentTheme" class="color-grid">
+      <p class="empty">테마 없음</p>
+    </div>
+    <button id="captureBtn" class="btn">📸 현재 페이지에서 추출</button>
+  </section>
+  
+  <section class="section">
+    <h2 class="section-title">저장된 테마</h2>
+    <div id="savedThemes">
+      <p class="empty">저장된 테마 없음</p>
+    </div>
+  </section>
+  
+  <button id="openPopupBtn" class="btn secondary">🔧 전체 설정 열기</button>
+
+  <script>
+    document.getElementById('captureBtn').addEventListener('click', async () => {
+      const response = await chrome.runtime.sendMessage({ type: 'CAPTURE_TAB' });
+      if (response.success) {
+        await chrome.runtime.sendMessage({ type: 'EXTRACT_THEME', data: { imageBase64: response.imageBase64 }});
+        loadCurrentTheme();
+      }
+    });
+    
+    document.getElementById('openPopupBtn').addEventListener('click', () => {
+      chrome.runtime.openOptionsPage();
+    });
+    
+    async function loadCurrentTheme() {
+      const result = await chrome.storage.local.get('currentTheme');
+      const container = document.getElementById('currentTheme');
+      if (result.currentTheme?.colors) {
+        container.innerHTML = result.currentTheme.colors.slice(0, 5).map(c => 
+          `<div class="color-item" style="background:${c}" title="${c}"></div>`
+        ).join('');
+      }
+    }
+    
+    loadCurrentTheme();
+  </script>
+</body>
+</html>

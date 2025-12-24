@@ -1,0 +1,36 @@
+/* AI Spaghetti Content Styles */
+/* 선택 가능한 테마 변수 정의 */
+
+:root {
+  --ai-spaghetti-transition: all 0.3s ease;
+}
+
+/* 테마 전환 애니메이션 */
+body.ai-spaghetti-theme-applied * {
+  transition: var(--ai-spaghetti-transition);
+}
+
+/* 테마 적용 표시기 */
+.ai-spaghetti-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--ai-spaghetti-primary, #6366f1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  z-index: 999999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: ai-spaghetti-slide-in 0.3s ease forwards;
+}
+
+@keyframes ai-spaghetti-slide-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
