@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import dotenv from 'dotenv';
 
 // Load environment variables first
@@ -10,10 +11,12 @@ import { env } from './config/env';
 import themeRoutes from './routes/theme.routes';
 import authRoutes from './routes/auth.routes';
 import docsRoutes from './routes/docs.routes';
+import healthRoutes, { setReadiness } from './routes/health.routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import { requestLogger, performanceLogger } from './middleware/requestLogger';
-import { securityHeaders, etag, publicCache, noCache } from './middleware/cacheControl';
+import { securityHeaders, etag, noCache } from './middleware/cacheControl';
+import { requestTimeout } from './middleware/timeout';
 import { logger } from './utils/logger';
 
 const app = express();
@@ -35,6 +38,21 @@ if (env.ENABLE_HELMET) {
     crossOriginEmbedderPolicy: false,
   }));
 }
+
+// Compression middleware - compress all responses
+app.use(compression({
+  level: 6, // Balanced compression level
+  threshold: 1024, // Only compress responses > 1KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+}));
+
+// Request timeout (30 seconds)
+app.use(requestTimeout(30000));
 
 // CORS configuration
 const corsOrigins = env.CORS_ORIGINS.split(',').map(origin => origin.trim());
@@ -89,18 +107,11 @@ app.use(etag());
 // Rate limiting
 app.use('/api/', apiLimiter);
 
-// Health check (no rate limit, short cache)
-app.get('/health', publicCache(10), (_req, res) => {
-  res.json({
-    status: 'ok',
-    environment: env.NODE_ENV,
-    timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '1.0.0',
-  });
-});
+// Health check routes (no rate limit)
+app.use('/health', healthRoutes);
 
-// API Documentation (no rate limit, no auth, cached)
-app.use('/docs', publicCache(300), docsRoutes);
+// API Documentation (no rate limit, no auth)
+app.use('/docs', docsRoutes);
 
 // API routes (auth routes should not be cached)
 app.use('/api/auth', noCache, authRoutes);
@@ -119,28 +130,38 @@ const server = app.listen(env.PORT, () => {
     environment: env.NODE_ENV,
   }, '🍝 AI Spaghetti Backend started');
 
-  logger.info(`   Health check: http://localhost:${env.PORT}/health`);
+  logger.info(`   Health: http://localhost:${env.PORT}/health`);
+  logger.info(`   Liveness: http://localhost:${env.PORT}/health/live`);
+  logger.info(`   Readiness: http://localhost:${env.PORT}/health/ready`);
   logger.info(`   API Docs: http://localhost:${env.PORT}/docs`);
   logger.info(`   Auth API: http://localhost:${env.PORT}/api/auth`);
   logger.info(`   Theme API: http://localhost:${env.PORT}/api/theme/extract`);
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received. Shutting down gracefully...');
-  server.close(() => {
-    logger.info('Server closed');
-    process.exit(0);
-  });
-});
+const gracefulShutdown = (signal: string) => {
+  logger.info(`${signal} received. Starting graceful shutdown...`);
 
-process.on('SIGINT', () => {
-  logger.info('SIGINT received. Shutting down gracefully...');
-  server.close(() => {
-    logger.info('Server closed');
-    process.exit(0);
-  });
-});
+  // Mark as not ready to stop receiving new requests
+  setReadiness(false);
+
+  // Give time for load balancer to stop sending traffic
+  setTimeout(() => {
+    server.close(() => {
+      logger.info('Server closed');
+      process.exit(0);
+    });
+
+    // Force shutdown after 10 seconds
+    setTimeout(() => {
+      logger.warn('Forcing shutdown after timeout');
+      process.exit(1);
+    }, 10000);
+  }, 5000); // 5 second drain period
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Uncaught exception handler
 process.on('uncaughtException', (error) => {
