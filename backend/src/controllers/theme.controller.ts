@@ -12,10 +12,7 @@ export const extractTheme = async (req: Request, res: Response): Promise<void> =
     throw ApiError.badRequest('Image file or URL is required', 'MISSING_IMAGE_INPUT');
   }
 
-  const theme: Theme = await extractThemeFromImage({
-    imageFile,
-    imageUrl
-  });
+  const theme: Theme = await extractThemeFromImage(imageFile, imageUrl);
 
   if (!theme || !theme.colors || theme.colors.length === 0) {
     throw ApiError.internal('Failed to extract theme from image', 'THEME_EXTRACTION_FAILED');

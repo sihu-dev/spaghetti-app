@@ -30,7 +30,7 @@ app.use('/api/assembly', assemblyRoutes);
 app.use('/api/templates', templateRoutes);
 
 // 헬스 체크
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

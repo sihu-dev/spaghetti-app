@@ -5,7 +5,8 @@ class ThemeModel {
   private themes: Map<string, Theme> = new Map();
 
   create(theme: Theme): Theme {
-    this.themes.set(theme.id, theme);
+    const id = theme.id?.toString() || Date.now().toString();
+    this.themes.set(id, { ...theme, id: parseInt(id) || Date.now() });
     return theme;
   }
 
