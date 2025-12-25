@@ -1,54 +1,105 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { Theme } from '../types';
+import { Theme, claudeThemeResponseSchema } from '../schemas/theme.schema';
+import { validateImageUrl, isValidImageMimeType, isValidHexColor } from '../utils/security';
+import { Errors } from '../utils/errors';
+import { env } from '../config/env';
 
-// Claude API 클라이언트 초기화
+// Claude API client initialization with validated API key
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || ''
+  apiKey: env.ANTHROPIC_API_KEY,
 });
 
+type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+
 /**
- * 이미지에서 테마 색상을 추출하는 서비스
+ * Extract theme colors from an image using Claude AI
  */
 export async function extractThemeFromImage(
   imageFile?: Express.Multer.File,
   imageUrl?: string
 ): Promise<Theme> {
   let imageData: string;
-  let mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+  let mediaType: ImageMediaType;
 
   if (imageFile) {
-    // 업로드된 파일 처리
+    // Validate uploaded file
+    if (!isValidImageMimeType(imageFile.mimetype)) {
+      throw Errors.invalidImage(`Unsupported file type: ${imageFile.mimetype}`);
+    }
+
+    // Check file size (max 10MB)
+    if (imageFile.size > 10 * 1024 * 1024) {
+      throw Errors.invalidImage('File size exceeds 10MB limit');
+    }
+
     imageData = imageFile.buffer.toString('base64');
     mediaType = getMediaType(imageFile.mimetype);
   } else if (imageUrl) {
-    // URL에서 이미지 가져오기
-    const response = await fetch(imageUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    imageData = Buffer.from(arrayBuffer).toString('base64');
-    mediaType = getMediaType(response.headers.get('content-type') || 'image/png');
+    // SSRF prevention - validate URL before fetching
+    validateImageUrl(imageUrl);
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+      const response = await fetch(imageUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'AI-Spaghetti/1.0',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw Errors.invalidImage(`Failed to fetch image: HTTP ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type') || 'image/png';
+      if (!isValidImageMimeType(contentType)) {
+        throw Errors.invalidImage(`Unsupported content type: ${contentType}`);
+      }
+
+      // Check content length
+      const contentLength = response.headers.get('content-length');
+      if (contentLength && parseInt(contentLength, 10) > 10 * 1024 * 1024) {
+        throw Errors.invalidImage('Remote image exceeds 10MB limit');
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      imageData = Buffer.from(arrayBuffer).toString('base64');
+      mediaType = getMediaType(contentType);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw Errors.invalidImage('Image fetch timed out');
+      }
+      throw error;
+    }
   } else {
-    throw new Error('No image provided');
+    throw Errors.badRequest('Either image file or imageUrl is required');
   }
 
-  // Claude API로 이미지 분석
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mediaType,
-              data: imageData
-            }
-          },
-          {
-            type: 'text',
-            text: `이 이미지를 분석하여 웹 UI 테마에 적합한 색상 팔레트를 추출해주세요.
+  // Call Claude API for image analysis
+  let message;
+  try {
+    message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType,
+                data: imageData,
+              },
+            },
+            {
+              type: 'text',
+              text: `이 이미지를 분석하여 웹 UI 테마에 적합한 색상 팔레트를 추출해주세요.
 
 다음 형식의 JSON으로만 응답해주세요:
 {
@@ -65,70 +116,94 @@ export async function extractThemeFromImage(
 
 색상은 5-10개 정도로, 이미지의 주요 색상을 조화롭게 추출해주세요.
 primary, secondary, accent는 UI의 주요 색상으로 사용됩니다.
-background와 surface는 배경색, text는 텍스트 색상입니다.`
-          }
-        ]
-      }
-    ]
-  });
-
-  // 응답 파싱
-  const textContent = message.content.find(c => c.type === 'text');
-  if (!textContent || textContent.type !== 'text') {
-    throw new Error('Failed to get response from Claude');
+background와 surface는 배경색, text는 텍스트 색상입니다.`,
+            },
+          ],
+        },
+      ],
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw Errors.externalApi('Claude AI', error.message);
+    }
+    throw Errors.themeExtractionFailed('Claude API call failed');
   }
 
-  // JSON 추출
+  // Parse response
+  const textContent = message.content.find((c) => c.type === 'text');
+  if (!textContent || textContent.type !== 'text') {
+    throw Errors.themeExtractionFailed('No text response from Claude');
+  }
+
+  // Extract JSON from response
   const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error('Failed to parse theme from response');
+    throw Errors.themeExtractionFailed('Could not parse JSON from response');
   }
 
-  const themeData = JSON.parse(jsonMatch[0]);
-  
+  let parsedData;
+  try {
+    parsedData = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw Errors.themeExtractionFailed('Invalid JSON in response');
+  }
+
+  // Validate with Zod schema (lenient parsing)
+  const validationResult = claudeThemeResponseSchema.safeParse(parsedData);
+  if (!validationResult.success) {
+    console.error('Theme validation failed:', validationResult.error);
+    throw Errors.themeExtractionFailed('Invalid theme data structure');
+  }
+
+  const themeData = validationResult.data;
+
+  // Validate and sanitize colors
+  const validatedColors = themeData.colors.filter(isValidHexColor);
+  if (validatedColors.length === 0) {
+    throw Errors.themeExtractionFailed('No valid colors extracted');
+  }
+
   const theme: Theme = {
-    colors: themeData.colors || [],
-    primary: themeData.primary,
-    secondary: themeData.secondary,
-    accent: themeData.accent,
-    background: themeData.background,
-    surface: themeData.surface,
-    text: themeData.text,
-    mood: themeData.mood,
-    suggestion: themeData.suggestion,
-    createdAt: new Date().toISOString()
+    id: `theme-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    colors: validatedColors,
+    primary: isValidHexColor(themeData.primary || '') ? themeData.primary : validatedColors[0],
+    secondary: isValidHexColor(themeData.secondary || '') ? themeData.secondary : validatedColors[1],
+    accent: isValidHexColor(themeData.accent || '') ? themeData.accent : validatedColors[2],
+    background: isValidHexColor(themeData.background || '') ? themeData.background : undefined,
+    surface: isValidHexColor(themeData.surface || '') ? themeData.surface : undefined,
+    text: isValidHexColor(themeData.text || '') ? themeData.text : undefined,
+    mood: themeData.mood?.substring(0, 500),
+    suggestion: themeData.suggestion?.substring(0, 1000),
+    createdAt: new Date().toISOString(),
   };
 
   return theme;
 }
 
 /**
- * MIME 타입을 Claude API 형식으로 변환
+ * Convert MIME type to Claude API format
  */
-function getMediaType(
-  mimeType: string
-): 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' {
-  const typeMap: Record<string, 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'> = {
+function getMediaType(mimeType: string): ImageMediaType {
+  const typeMap: Record<string, ImageMediaType> = {
     'image/jpeg': 'image/jpeg',
     'image/jpg': 'image/jpeg',
     'image/png': 'image/png',
     'image/gif': 'image/gif',
-    'image/webp': 'image/webp'
+    'image/webp': 'image/webp',
   };
-  
-  return typeMap[mimeType] || 'image/png';
+
+  return typeMap[mimeType.toLowerCase()] || 'image/png';
 }
 
 /**
- * 색상 조합 유효성 검사
+ * Validate color palette format
  */
 export function validateColorPalette(colors: string[]): boolean {
-  const hexRegex = /^#[0-9A-Fa-f]{6}$/;
-  return colors.every(color => hexRegex.test(color));
+  return colors.every(isValidHexColor);
 }
 
 /**
- * 대비 비율 계산 (WCAG 접근성)
+ * Calculate contrast ratio (WCAG accessibility)
  */
 export function calculateContrastRatio(color1: string, color2: string): number {
   const lum1 = getLuminance(color1);
@@ -140,7 +215,7 @@ export function calculateContrastRatio(color1: string, color2: string): number {
 
 function getLuminance(hex: string): number {
   const rgb = hexToRgb(hex);
-  const [r, g, b] = rgb.map(c => {
+  const [r, g, b] = rgb.map((c) => {
     c = c / 255;
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   });
@@ -150,9 +225,5 @@ function getLuminance(hex: string): number {
 function hexToRgb(hex: string): number[] {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return [0, 0, 0];
-  return [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16)
-  ];
+  return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
 }

@@ -1,33 +1,39 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { extractThemeFromImage } from '../services/theme.service';
-import { Theme } from '../types';
+import { Theme } from '../schemas/theme.schema';
+import { asyncHandler } from '../middleware/errorHandler';
+import { Errors } from '../utils/errors';
 
-export const extractTheme = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const imageFile = req.file;
-    const imageUrl = req.body.imageUrl;
+export interface SuccessResponse<T> {
+  success: true;
+  data: T;
+  requestId?: string;
+  timestamp: string;
+}
 
-    if (!imageFile && !imageUrl) {
-      res.status(400).json({
-        error: 'Image file or URL is required'
-      });
-      return;
-    }
+function createSuccessResponse<T>(data: T, requestId?: string): SuccessResponse<T> {
+  return {
+    success: true,
+    data,
+    requestId,
+    timestamp: new Date().toISOString(),
+  };
+}
 
-    const theme: Theme = await extractThemeFromImage({
-      imageFile,
-      imageUrl
-    });
+export const extractTheme = asyncHandler(async (
+  req: Request,
+  res: Response,
+  _next: NextFunction
+): Promise<void> => {
+  const imageFile = req.file;
+  const imageUrl = req.body.imageUrl;
 
-    res.status(200).json({
-      success: true,
-      data: theme
-    });
-  } catch (error) {
-    console.error('Theme extraction error:', error);
-    res.status(500).json({
-      error: 'Failed to extract theme',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+  if (!imageFile && !imageUrl) {
+    throw Errors.badRequest('Image file or URL is required');
   }
-};
+
+  const theme: Theme = await extractThemeFromImage(imageFile, imageUrl);
+
+  const requestId = req.headers['x-request-id'] as string | undefined;
+  res.status(200).json(createSuccessResponse(theme, requestId));
+});

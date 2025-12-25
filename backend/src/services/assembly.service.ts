@@ -46,7 +46,7 @@ export const createAssembly = async (
     themeId,
     customizations,
     generatedCode,
-    createdAt: new Date()
+    createdAt: new Date().toISOString()
   };
 
   assemblies.set(assembly.id, assembly);
