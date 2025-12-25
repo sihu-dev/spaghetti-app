@@ -12,11 +12,15 @@ import themeRoutes from './routes/theme.routes';
 import authRoutes from './routes/auth.routes';
 import docsRoutes from './routes/docs.routes';
 import healthRoutes, { setReadiness } from './routes/health.routes';
+import metricsRoutes from './routes/metrics.routes';
+import v1Routes from './routes/v1';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import { requestLogger, performanceLogger } from './middleware/requestLogger';
 import { securityHeaders, etag, noCache } from './middleware/cacheControl';
 import { requestTimeout } from './middleware/timeout';
+import { metricsMiddleware } from './middleware/metrics';
+import { sanitizeInput, sqlInjectionDetector } from './middleware/sanitize';
 import { logger } from './utils/logger';
 
 const app = express();
@@ -98,6 +102,13 @@ app.use((req, _res, next) => {
 app.use(requestLogger);
 app.use(performanceLogger(2000)); // Log requests > 2s
 
+// Prometheus metrics collection
+app.use(metricsMiddleware);
+
+// Input sanitization and security
+app.use(sanitizeInput);
+app.use(sqlInjectionDetector);
+
 // Security headers for all responses
 app.use(securityHeaders);
 
@@ -110,10 +121,16 @@ app.use('/api/', apiLimiter);
 // Health check routes (no rate limit)
 app.use('/health', healthRoutes);
 
+// Prometheus metrics endpoint (no rate limit)
+app.use('/metrics', metricsRoutes);
+
 // API Documentation (no rate limit, no auth)
 app.use('/docs', docsRoutes);
 
-// API routes (auth routes should not be cached)
+// API v1 routes (versioned)
+app.use('/api/v1', v1Routes);
+
+// Legacy API routes (backwards compatibility, same as v1)
 app.use('/api/auth', noCache, authRoutes);
 app.use('/api/theme', themeRoutes);
 
@@ -133,9 +150,11 @@ const server = app.listen(env.PORT, () => {
   logger.info(`   Health: http://localhost:${env.PORT}/health`);
   logger.info(`   Liveness: http://localhost:${env.PORT}/health/live`);
   logger.info(`   Readiness: http://localhost:${env.PORT}/health/ready`);
+  logger.info(`   Metrics: http://localhost:${env.PORT}/metrics`);
   logger.info(`   API Docs: http://localhost:${env.PORT}/docs`);
-  logger.info(`   Auth API: http://localhost:${env.PORT}/api/auth`);
-  logger.info(`   Theme API: http://localhost:${env.PORT}/api/theme/extract`);
+  logger.info(`   API v1: http://localhost:${env.PORT}/api/v1`);
+  logger.info(`   Auth API: http://localhost:${env.PORT}/api/v1/auth`);
+  logger.info(`   Theme API: http://localhost:${env.PORT}/api/v1/theme/extract`);
 });
 
 // Graceful shutdown
