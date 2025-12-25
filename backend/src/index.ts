@@ -8,6 +8,7 @@ dotenv.config();
 
 import { env } from './config/env';
 import themeRoutes from './routes/theme.routes';
+import authRoutes from './routes/auth.routes';
 import docsRoutes from './routes/docs.routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
@@ -95,6 +96,7 @@ app.get('/health', (_req, res) => {
 app.use('/docs', docsRoutes);
 
 // API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/theme', themeRoutes);
 
 // 404 handler
@@ -112,6 +114,7 @@ const server = app.listen(env.PORT, () => {
 
   logger.info(`   Health check: http://localhost:${env.PORT}/health`);
   logger.info(`   API Docs: http://localhost:${env.PORT}/docs`);
+  logger.info(`   Auth API: http://localhost:${env.PORT}/api/auth`);
   logger.info(`   Theme API: http://localhost:${env.PORT}/api/theme/extract`);
 });
 

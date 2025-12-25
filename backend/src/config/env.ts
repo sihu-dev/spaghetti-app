@@ -26,6 +26,16 @@ export const env = cleanEnv(process.env, {
   // Security
   ENABLE_HELMET: bool({ default: true }),
   TRUST_PROXY: bool({ default: false }),
+
+  // JWT
+  JWT_SECRET: str({
+    default: 'dev-jwt-secret-change-in-production',
+    desc: 'Secret key for JWT access tokens'
+  }),
+  JWT_REFRESH_SECRET: str({
+    default: 'dev-jwt-refresh-secret-change-in-production',
+    desc: 'Secret key for JWT refresh tokens'
+  }),
 });
 
 export type Env = typeof env;
