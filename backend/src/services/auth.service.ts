@@ -47,8 +47,16 @@ function generateTokens(user: User): { accessToken: string; refreshToken: string
     role: user.role,
   };
 
-  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
-  const refreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+  // Add jti (JWT ID) to make each token unique even if generated at same timestamp
+  const accessToken = jwt.sign(payload, JWT_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    jwtid: uuidv4(),
+  });
+  const refreshToken = jwt.sign(
+    { userId: user.id, jti: uuidv4() },
+    JWT_REFRESH_SECRET,
+    { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
+  );
 
   // Store refresh token
   const expiresAt = new Date();
