@@ -4,14 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { User, RegisterInput, LoginInput, UserResponse, AuthResponse } from '../schemas/auth.schema';
 import { Errors } from '../utils/errors';
 import { logger } from '../utils/logger';
+import { env } from '../config/env';
 
 // In-memory user storage (replace with database in production)
 const users = new Map<string, User>();
 const refreshTokens = new Map<string, { userId: string; expiresAt: Date }>();
 
-// JWT configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production';
+// JWT configuration - using validated environment variables
+const JWT_SECRET = env.JWT_SECRET;
+const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET;
 const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
 const ACCESS_TOKEN_EXPIRES_SECONDS = 15 * 60; // 15 minutes

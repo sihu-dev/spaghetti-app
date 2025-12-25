@@ -13,6 +13,7 @@ import docsRoutes from './routes/docs.routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import { requestLogger, performanceLogger } from './middleware/requestLogger';
+import { securityHeaders, etag, publicCache, noCache } from './middleware/cacheControl';
 import { logger } from './utils/logger';
 
 const app = express();
@@ -79,11 +80,17 @@ app.use((req, _res, next) => {
 app.use(requestLogger);
 app.use(performanceLogger(2000)); // Log requests > 2s
 
+// Security headers for all responses
+app.use(securityHeaders);
+
+// ETag support for efficient caching
+app.use(etag());
+
 // Rate limiting
 app.use('/api/', apiLimiter);
 
-// Health check (no rate limit)
-app.get('/health', (_req, res) => {
+// Health check (no rate limit, short cache)
+app.get('/health', publicCache(10), (_req, res) => {
   res.json({
     status: 'ok',
     environment: env.NODE_ENV,
@@ -92,11 +99,11 @@ app.get('/health', (_req, res) => {
   });
 });
 
-// API Documentation (no rate limit, no auth)
-app.use('/docs', docsRoutes);
+// API Documentation (no rate limit, no auth, cached)
+app.use('/docs', publicCache(300), docsRoutes);
 
-// API routes
-app.use('/api/auth', authRoutes);
+// API routes (auth routes should not be cached)
+app.use('/api/auth', noCache, authRoutes);
 app.use('/api/theme', themeRoutes);
 
 // 404 handler
