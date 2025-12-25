@@ -6,13 +6,18 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || ''
 });
 
+interface ExtractThemeOptions {
+  imageFile?: Express.Multer.File;
+  imageUrl?: string;
+}
+
 /**
  * 이미지에서 테마 색상을 추출하는 서비스
  */
 export async function extractThemeFromImage(
-  imageFile?: Express.Multer.File,
-  imageUrl?: string
+  options: ExtractThemeOptions
 ): Promise<Theme> {
+  const { imageFile, imageUrl } = options;
   let imageData: string;
   let mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 

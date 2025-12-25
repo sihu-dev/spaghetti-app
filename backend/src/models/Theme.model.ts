@@ -5,8 +5,10 @@ class ThemeModel {
   private themes: Map<string, Theme> = new Map();
 
   create(theme: Theme): Theme {
-    this.themes.set(theme.id, theme);
-    return theme;
+    const id = theme.id || crypto.randomUUID();
+    const themeWithId = { ...theme, id };
+    this.themes.set(id, themeWithId);
+    return themeWithId;
   }
 
   findById(id: string): Theme | null {
