@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { Theme } from '../types';
+import { prisma } from '../lib/prisma';
 
 // Claude API 클라이언트 초기화
 const anthropic = new Anthropic({
@@ -155,4 +156,103 @@ function hexToRgb(hex: string): number[] {
     parseInt(result[2], 16),
     parseInt(result[3], 16)
   ];
+}
+
+/**
+ * Save theme to database
+ */
+export async function saveTheme(theme: Theme): Promise<Theme> {
+  const savedTheme = await prisma.theme.create({
+    data: {
+      colors: JSON.stringify(theme.colors),
+      primary: theme.primary,
+      secondary: theme.secondary,
+      accent: theme.accent,
+      background: theme.background,
+      surface: theme.surface,
+      text: theme.text,
+      mood: theme.mood,
+      suggestion: theme.suggestion,
+      savedAt: new Date()
+    }
+  });
+
+  return {
+    id: savedTheme.id,
+    colors: JSON.parse(savedTheme.colors),
+    primary: savedTheme.primary || undefined,
+    secondary: savedTheme.secondary || undefined,
+    accent: savedTheme.accent || undefined,
+    background: savedTheme.background || undefined,
+    surface: savedTheme.surface || undefined,
+    text: savedTheme.text || undefined,
+    mood: savedTheme.mood || undefined,
+    suggestion: savedTheme.suggestion || undefined,
+    createdAt: savedTheme.createdAt.toISOString(),
+    savedAt: savedTheme.savedAt?.toISOString()
+  };
+}
+
+/**
+ * Get theme by ID from database
+ */
+export async function getThemeById(id: number): Promise<Theme | null> {
+  const theme = await prisma.theme.findUnique({
+    where: { id }
+  });
+
+  if (!theme) return null;
+
+  return {
+    id: theme.id,
+    colors: JSON.parse(theme.colors),
+    primary: theme.primary || undefined,
+    secondary: theme.secondary || undefined,
+    accent: theme.accent || undefined,
+    background: theme.background || undefined,
+    surface: theme.surface || undefined,
+    text: theme.text || undefined,
+    mood: theme.mood || undefined,
+    suggestion: theme.suggestion || undefined,
+    createdAt: theme.createdAt.toISOString(),
+    savedAt: theme.savedAt?.toISOString()
+  };
+}
+
+/**
+ * Get all themes from database
+ */
+export async function getAllThemes(): Promise<Theme[]> {
+  const themes = await prisma.theme.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
+
+  return themes.map(theme => ({
+    id: theme.id,
+    colors: JSON.parse(theme.colors),
+    primary: theme.primary || undefined,
+    secondary: theme.secondary || undefined,
+    accent: theme.accent || undefined,
+    background: theme.background || undefined,
+    surface: theme.surface || undefined,
+    text: theme.text || undefined,
+    mood: theme.mood || undefined,
+    suggestion: theme.suggestion || undefined,
+    createdAt: theme.createdAt.toISOString(),
+    savedAt: theme.savedAt?.toISOString()
+  }));
+}
+
+/**
+ * Delete theme from database
+ */
+export async function deleteTheme(id: number): Promise<boolean> {
+  try {
+    await prisma.theme.delete({
+      where: { id }
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
 }

@@ -1,0 +1,48 @@
+# Root level .dockerignore for docker-compose context
+
+# Node modules in all directories
+**/node_modules
+**/npm-debug.log*
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+*.env
+
+# Build outputs
+**/dist
+**/build
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Testing
+**/coverage
+**/.nyc_output
+
+# Logs
+**/*.log
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+
+# Temporary files
+tmp
+temp
+*.tmp

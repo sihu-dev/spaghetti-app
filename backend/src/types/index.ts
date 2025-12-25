@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface Theme {
   colors: string[];
   primary?: string;
@@ -49,4 +51,41 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   message?: string;
+}
+
+// Authentication Types
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TokenPayload {
+  userId: string;
+  email: string;
+  username: string;
+}
+
+export interface AuthRequest extends Request {
+  user?: TokenPayload;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  username: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: Omit<User, 'password'>;
+  token: string;
+  expiresIn: string;
 }

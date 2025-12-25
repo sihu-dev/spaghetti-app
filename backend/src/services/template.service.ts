@@ -1,6 +1,7 @@
 import { Template } from '../types';
+import { prisma } from '../lib/prisma';
 
-// Mock template data (replace with database in production)
+// Mock template data (used for seeding database)
 const mockTemplates: Template[] = [
   {
     id: 'hero-1',
@@ -274,17 +275,140 @@ const mockTemplates: Template[] = [
   }
 ];
 
+/**
+ * Get all templates from database (optionally filter by category)
+ */
 export const getAllTemplates = async (category?: string): Promise<Template[]> => {
-  if (category) {
-    return mockTemplates.filter(t => t.category === category);
+  // Check if database has templates, if not seed it
+  const count = await prisma.template.count();
+  if (count === 0) {
+    await seedTemplates();
   }
-  return mockTemplates;
+
+  const dbTemplates = await prisma.template.findMany({
+    where: category ? { category } : undefined,
+    orderBy: { createdAt: 'asc' }
+  });
+
+  return dbTemplates.map(t => ({
+    id: t.id,
+    name: t.name,
+    category: t.category,
+    description: t.description,
+    previewImage: t.previewImage,
+    componentType: t.componentType,
+    props: JSON.parse(t.props),
+    createdAt: t.createdAt
+  }));
 };
 
+/**
+ * Get template details by ID
+ */
 export const getTemplateDetails = async (id: string): Promise<Template | null> => {
-  return mockTemplates.find(t => t.id === id) || null;
+  const template = await prisma.template.findUnique({
+    where: { id }
+  });
+
+  if (!template) return null;
+
+  return {
+    id: template.id,
+    name: template.name,
+    category: template.category,
+    description: template.description,
+    previewImage: template.previewImage,
+    componentType: template.componentType,
+    props: JSON.parse(template.props),
+    createdAt: template.createdAt
+  };
 };
 
+/**
+ * Get templates by category
+ */
 export const getTemplatesByCategory = async (category: string): Promise<Template[]> => {
-  return mockTemplates.filter(t => t.category === category);
+  const dbTemplates = await prisma.template.findMany({
+    where: { category },
+    orderBy: { createdAt: 'asc' }
+  });
+
+  return dbTemplates.map(t => ({
+    id: t.id,
+    name: t.name,
+    category: t.category,
+    description: t.description,
+    previewImage: t.previewImage,
+    componentType: t.componentType,
+    props: JSON.parse(t.props),
+    createdAt: t.createdAt
+  }));
+};
+
+/**
+ * Seed database with mock templates
+ */
+async function seedTemplates(): Promise<void> {
+  // Seed templates one by one to handle potential duplicates
+  for (const t of mockTemplates) {
+    try {
+      await prisma.template.create({
+        data: {
+          id: t.id,
+          name: t.name,
+          category: t.category,
+          description: t.description,
+          previewImage: t.previewImage,
+          componentType: t.componentType,
+          props: JSON.stringify(t.props),
+          createdAt: t.createdAt
+        }
+      });
+    } catch (error) {
+      // Skip if template already exists
+      continue;
+    }
+  }
+}
+
+/**
+ * Create a new template
+ */
+export const createTemplate = async (template: Omit<Template, 'createdAt'>): Promise<Template> => {
+  const created = await prisma.template.create({
+    data: {
+      id: template.id,
+      name: template.name,
+      category: template.category,
+      description: template.description,
+      previewImage: template.previewImage,
+      componentType: template.componentType,
+      props: JSON.stringify(template.props)
+    }
+  });
+
+  return {
+    id: created.id,
+    name: created.name,
+    category: created.category,
+    description: created.description,
+    previewImage: created.previewImage,
+    componentType: created.componentType,
+    props: JSON.parse(created.props),
+    createdAt: created.createdAt
+  };
+};
+
+/**
+ * Delete a template
+ */
+export const deleteTemplate = async (id: string): Promise<boolean> => {
+  try {
+    await prisma.template.delete({
+      where: { id }
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
 };

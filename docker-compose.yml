@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    image: spaghetti-backend:latest
+    container_name: spaghetti-backend
+    restart: unless-stopped
+
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Set your API key here or use .env file
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      # Database URL for Prisma (SQLite)
+      - DATABASE_URL=file:/app/data/spaghetti.db
+
+    # Alternative: Load from .env file
+    # env_file:
+    #   - ./backend/.env
+
+    # Port mapping
+    ports:
+      - "3000:3000"
+
+    # Volume for SQLite database persistence
+    volumes:
+      - backend-data:/app/data
+      - ./backend/uploads:/app/uploads
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Resource limits (optional but recommended)
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Network configuration
+    networks:
+      - spaghetti-network
+
+# Named volumes for data persistence
+volumes:
+  backend-data:
+    driver: local
+
+# Network configuration
+networks:
+  spaghetti-network:
+    driver: bridge

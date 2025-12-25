@@ -1,15 +1,11 @@
 import { Assembly, AssemblyGenerationRequest, Theme } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { getTemplateDetails } from './template.service';
-
-// In-memory storage (replace with database in production)
-const assemblies = new Map<string, Assembly>();
-
-// Mock theme storage (in production, fetch from database)
-const mockThemes = new Map<string, Theme>();
+import { getThemeById as fetchThemeById } from './theme.service';
+import { prisma } from '../lib/prisma';
 
 // Helper to get theme by ID
-const getThemeById = (themeId: string): Theme => {
+const getThemeById = async (themeId: string): Promise<Theme> => {
   // Default theme if not found
   const defaultTheme: Theme = {
     colors: ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981'],
@@ -21,7 +17,18 @@ const getThemeById = (themeId: string): Theme => {
     text: '#1F2937'
   };
 
-  return mockThemes.get(themeId) || defaultTheme;
+  // Try to fetch from database, handle both string and number IDs
+  try {
+    const themeIdNum = parseInt(themeId);
+    if (!isNaN(themeIdNum)) {
+      const theme = await fetchThemeById(themeIdNum);
+      if (theme) return theme;
+    }
+  } catch (error) {
+    console.error('Error fetching theme:', error);
+  }
+
+  return defaultTheme;
 };
 
 // Component-specific generators
@@ -2910,8 +2917,8 @@ const adjustColor = (color: string, amount: number): string => {
 };
 
 // Main code generation function
-const generateReactCode = (templateId: string, themeId: string, customizations?: Record<string, any>): string => {
-  const theme = getThemeById(themeId);
+const generateReactCode = async (templateId: string, themeId: string, customizations?: Record<string, any>): Promise<string> => {
+  const theme = await getThemeById(themeId);
 
   // Get template to determine component type
   let componentType = 'HeroSection'; // default
@@ -2988,26 +2995,62 @@ export const createAssembly = async (
     throw new Error(`Template ${templateId} not found`);
   }
 
-  const generatedCode = generateReactCode(templateId, themeId, customizations);
+  const generatedCode = await generateReactCode(templateId, themeId, customizations);
 
-  const assembly: Assembly = {
-    id: uuidv4(),
-    templateId,
-    themeId,
-    customizations,
-    generatedCode,
-    createdAt: new Date()
+  // Convert themeId to number for database storage
+  const themeIdNum = parseInt(themeId);
+  if (isNaN(themeIdNum)) {
+    throw new Error(`Invalid themeId: ${themeId}`);
+  }
+
+  const assembly = await prisma.assembly.create({
+    data: {
+      id: uuidv4(),
+      templateId,
+      themeId: themeIdNum,
+      customizations: customizations ? JSON.stringify(customizations) : null,
+      generatedCode
+    }
+  });
+
+  return {
+    id: assembly.id,
+    templateId: assembly.templateId,
+    themeId: assembly.themeId.toString(),
+    customizations: assembly.customizations ? JSON.parse(assembly.customizations) : undefined,
+    generatedCode: assembly.generatedCode,
+    createdAt: assembly.createdAt
   };
-
-  assemblies.set(assembly.id, assembly);
-
-  return assembly;
 };
 
 export const findAssemblyById = async (id: string): Promise<Assembly | null> => {
-  return assemblies.get(id) || null;
+  const assembly = await prisma.assembly.findUnique({
+    where: { id }
+  });
+
+  if (!assembly) return null;
+
+  return {
+    id: assembly.id,
+    templateId: assembly.templateId,
+    themeId: assembly.themeId.toString(),
+    customizations: assembly.customizations ? JSON.parse(assembly.customizations) : undefined,
+    generatedCode: assembly.generatedCode,
+    createdAt: assembly.createdAt
+  };
 };
 
 export const getAllAssemblies = async (): Promise<Assembly[]> => {
-  return Array.from(assemblies.values());
+  const assemblies = await prisma.assembly.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
+
+  return assemblies.map(assembly => ({
+    id: assembly.id,
+    templateId: assembly.templateId,
+    themeId: assembly.themeId.toString(),
+    customizations: assembly.customizations ? JSON.parse(assembly.customizations) : undefined,
+    generatedCode: assembly.generatedCode,
+    createdAt: assembly.createdAt
+  }));
 };

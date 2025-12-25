@@ -1,0 +1,80 @@
+// Prisma Schema for SPAGHETTI Backend
+// SQLite database configuration
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // "file:./dev.db" for development
+}
+
+// Theme model - stores color palettes extracted from images
+model Theme {
+  id         Int        @id @default(autoincrement())
+  colors     String     // JSON array of color hex codes
+  primary    String?
+  secondary  String?
+  accent     String?
+  background String?
+  surface    String?
+  text       String?
+  mood       String?
+  suggestion String?
+  createdAt  DateTime   @default(now())
+  savedAt    DateTime?
+
+  // Relations
+  assemblies Assembly[]
+
+  @@map("themes")
+}
+
+// Template model - stores UI component templates
+model Template {
+  id            String     @id @default(uuid())
+  name          String
+  category      String
+  description   String
+  previewImage  String
+  componentType String
+  props         String     // JSON object for component props
+  createdAt     DateTime   @default(now())
+
+  // Relations
+  assemblies    Assembly[]
+
+  @@map("templates")
+  @@index([category])
+}
+
+// Assembly model - stores generated component assemblies
+model Assembly {
+  id             String    @id @default(uuid())
+  templateId     String
+  themeId        Int
+  customizations String?   // JSON object for customizations
+  generatedCode  String    // Generated component code
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  template       Template  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  theme          Theme     @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@map("assemblies")
+  @@index([templateId])
+  @@index([themeId])
+}
+
+// User model - for future authentication
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
