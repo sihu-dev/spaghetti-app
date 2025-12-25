@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Errors } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 /**
  * Request timeout middleware
@@ -10,18 +10,28 @@ export function requestTimeout(timeoutMs: number = 30000) {
     // Set timeout for the request
     req.setTimeout(timeoutMs, () => {
       if (!res.headersSent) {
-        const error = Errors.internal('Request timeout');
-        error.statusCode = 408;
-        next(error);
+        res.status(408).json({
+          success: false,
+          error: {
+            code: 'TIMEOUT',
+            message: 'Request timeout',
+          },
+          timestamp: new Date().toISOString(),
+        });
       }
     });
 
     // Also set response timeout
     res.setTimeout(timeoutMs, () => {
       if (!res.headersSent) {
-        const error = Errors.internal('Response timeout');
-        error.statusCode = 408;
-        next(error);
+        res.status(408).json({
+          success: false,
+          error: {
+            code: 'TIMEOUT',
+            message: 'Response timeout',
+          },
+          timestamp: new Date().toISOString(),
+        });
       }
     });
 
@@ -40,7 +50,6 @@ export function slowRequestDetector(thresholdMs: number = 5000) {
     res.on('finish', () => {
       const duration = Date.now() - start;
       if (duration > thresholdMs) {
-        const logger = require('../utils/logger').logger;
         logger.warn({
           method: req.method,
           url: req.originalUrl,

@@ -154,7 +154,7 @@ export async function login(input: LoginInput): Promise<AuthResponse> {
 /**
  * Refresh access token
  */
-export async function refreshAccessToken(refreshToken: string): Promise<AuthResponse> {
+export function refreshAccessToken(refreshToken: string): AuthResponse {
   const storedToken = refreshTokens.get(refreshToken);
 
   if (!storedToken) {

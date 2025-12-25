@@ -1,5 +1,23 @@
 {
+  "name": "spaghetti-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky"
+  },
   "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.5",
     "sharp": "^0.34.5"
+  },
+  "lint-staged": {
+    "backend/**/*.ts": [
+      "bash -c 'cd backend && npm run lint:fix'",
+      "bash -c 'cd backend && npm run typecheck'"
+    ],
+    "*.{ts,js,json,md,yml,yaml}": [
+      "prettier --write --ignore-unknown"
+    ]
   }
 }

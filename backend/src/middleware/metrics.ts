@@ -22,8 +22,9 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   // Normalize route for metrics (avoid high cardinality)
   const getRoute = (): string => {
     // Use the matched route pattern if available
-    if (req.route?.path) {
-      return req.baseUrl + req.route.path;
+    const route = req.route as { path?: string } | undefined;
+    if (route?.path && typeof route.path === 'string') {
+      return req.baseUrl + route.path;
     }
     // Otherwise, normalize the path
     return normalizeRoute(req.path);

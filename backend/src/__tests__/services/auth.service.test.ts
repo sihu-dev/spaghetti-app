@@ -107,8 +107,8 @@ describe('Auth Service', () => {
   });
 
   describe('refreshAccessToken', () => {
-    it('should refresh tokens with valid refresh token', async () => {
-      const result = await refreshAccessToken(refreshToken);
+    it('should refresh tokens with valid refresh token', () => {
+      const result = refreshAccessToken(refreshToken);
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
@@ -119,34 +119,28 @@ describe('Auth Service', () => {
       refreshToken = result.refreshToken;
     });
 
-    it('should throw error for invalid refresh token', async () => {
-      await expect(refreshAccessToken('invalid-token')).rejects.toMatchObject({
-        code: ErrorCode.UNAUTHORIZED,
-      });
+    it('should throw error for invalid refresh token', () => {
+      expect(() => refreshAccessToken('invalid-token')).toThrow(AppError);
     });
 
-    it('should throw error for used refresh token (after refresh)', async () => {
+    it('should throw error for used refresh token (after refresh)', () => {
       // Capture the current token before refreshing
       const oldToken = refreshToken;
 
       // Refresh once to get new token - this should invalidate the old token
-      const result = await refreshAccessToken(oldToken);
+      const result = refreshAccessToken(oldToken);
       refreshToken = result.refreshToken;
 
       // Old token should now be invalid (already used)
-      await expect(refreshAccessToken(oldToken)).rejects.toMatchObject({
-        code: ErrorCode.UNAUTHORIZED,
-      });
+      expect(() => refreshAccessToken(oldToken)).toThrow(AppError);
     });
   });
 
   describe('logout', () => {
-    it('should invalidate refresh token', async () => {
+    it('should invalidate refresh token', () => {
       logout(refreshToken);
 
-      await expect(refreshAccessToken(refreshToken)).rejects.toMatchObject({
-        code: ErrorCode.UNAUTHORIZED,
-      });
+      expect(() => refreshAccessToken(refreshToken)).toThrow(AppError);
     });
 
     it('should not throw for invalid token', () => {

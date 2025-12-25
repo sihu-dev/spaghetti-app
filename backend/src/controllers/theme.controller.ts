@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { extractThemeFromImage } from '../services/theme.service';
 import { Theme } from '../schemas/theme.schema';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -22,11 +22,11 @@ function createSuccessResponse<T>(data: T, requestId?: string): SuccessResponse<
 
 export const extractTheme = asyncHandler(async (
   req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ): Promise<void> => {
   const imageFile = req.file;
-  const imageUrl = req.body.imageUrl;
+  const body = req.body as { imageUrl?: string };
+  const imageUrl = body.imageUrl;
 
   if (!imageFile && !imageUrl) {
     throw Errors.badRequest('Image file or URL is required');

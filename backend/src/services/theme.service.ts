@@ -141,9 +141,9 @@ background와 surface는 배경색, text는 텍스트 색상입니다.`,
     throw Errors.themeExtractionFailed('Could not parse JSON from response');
   }
 
-  let parsedData;
+  let parsedData: unknown;
   try {
-    parsedData = JSON.parse(jsonMatch[0]);
+    parsedData = JSON.parse(jsonMatch[0]) as unknown;
   } catch {
     throw Errors.themeExtractionFailed('Invalid JSON in response');
   }

@@ -35,7 +35,7 @@ jobs:
 
       - name: Lint
         working-directory: ./backend
-        run: npm run lint || true  # Don't fail on lint warnings initially
+        run: npm run lint
 
   test:
     name: Test

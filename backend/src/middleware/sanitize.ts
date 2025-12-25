@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 
 /**
  * HTML entity encoding map
@@ -81,9 +82,11 @@ export function sanitizeInput(req: Request, _res: Response, next: NextFunction):
 export function sanitizeFields(...fields: string[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (req.body && typeof req.body === 'object') {
+      const body = req.body as Record<string, unknown>;
       for (const field of fields) {
-        if (field in req.body && typeof req.body[field] === 'string') {
-          req.body[field] = encodeHtmlEntities(req.body[field].trim());
+        const value = body[field];
+        if (field in body && typeof value === 'string') {
+          body[field] = encodeHtmlEntities(value.trim());
         }
       }
     }
@@ -112,7 +115,6 @@ export function detectSqlInjection(value: string): boolean {
 export function sqlInjectionDetector(req: Request, _res: Response, next: NextFunction): void {
   const checkValue = (value: unknown, path: string): void => {
     if (typeof value === 'string' && detectSqlInjection(value)) {
-      const logger = require('../utils/logger').logger;
       logger.warn({
         path,
         value: value.substring(0, 100), // Log only first 100 chars

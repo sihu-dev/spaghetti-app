@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { getAllTemplates, getTemplateDetails } from '../services/template.service';
 
-export const getTemplates = async (req: Request, res: Response): Promise<void> => {
+export const getTemplates = (req: Request, res: Response): void => {
   try {
     const { category } = req.query;
 
-    const templates = await getAllTemplates(category as string);
+    const templates = getAllTemplates(category as string);
 
     res.status(200).json({
       success: true,
@@ -21,11 +21,11 @@ export const getTemplates = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-export const getTemplateById = async (req: Request, res: Response): Promise<void> => {
+export const getTemplateById = (req: Request, res: Response): void => {
   try {
     const { id } = req.params;
 
-    const template = await getTemplateDetails(id);
+    const template = getTemplateDetails(id);
 
     if (!template) {
       res.status(404).json({

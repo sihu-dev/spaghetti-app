@@ -73,17 +73,17 @@ const mockTemplates: Template[] = [
   }
 ];
 
-export const getAllTemplates = async (category?: string): Promise<Template[]> => {
+export const getAllTemplates = (category?: string): Template[] => {
   if (category) {
     return mockTemplates.filter(t => t.category === category);
   }
   return mockTemplates;
 };
 
-export const getTemplateDetails = async (id: string): Promise<Template | null> => {
+export const getTemplateDetails = (id: string): Template | null => {
   return mockTemplates.find(t => t.id === id) || null;
 };
 
-export const getTemplatesByCategory = async (category: string): Promise<Template[]> => {
+export const getTemplatesByCategory = (category: string): Template[] => {
   return mockTemplates.filter(t => t.category === category);
 };

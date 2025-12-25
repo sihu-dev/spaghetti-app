@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { createAssembly, findAssemblyById } from '../services/assembly.service';
 import { AssemblyGenerationRequest } from '../types';
 
-export const generateAssembly = async (req: Request, res: Response): Promise<void> => {
+export const generateAssembly = (req: Request, res: Response): void => {
   try {
-    const { templateId, themeId, customizations }: AssemblyGenerationRequest = req.body;
+    const { templateId, themeId, customizations } = req.body as AssemblyGenerationRequest;
 
     if (!templateId || !themeId) {
       res.status(400).json({
@@ -13,7 +13,7 @@ export const generateAssembly = async (req: Request, res: Response): Promise<voi
       return;
     }
 
-    const assembly = await createAssembly({
+    const assembly = createAssembly({
       templateId,
       themeId,
       customizations
@@ -32,11 +32,11 @@ export const generateAssembly = async (req: Request, res: Response): Promise<voi
   }
 };
 
-export const getAssembly = async (req: Request, res: Response): Promise<void> => {
+export const getAssembly = (req: Request, res: Response): void => {
   try {
     const { id } = req.params;
 
-    const assembly = await findAssemblyById(id);
+    const assembly = findAssemblyById(id);
 
     if (!assembly) {
       res.status(404).json({
