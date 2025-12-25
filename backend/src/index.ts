@@ -8,8 +8,11 @@ dotenv.config();
 
 import { env } from './config/env';
 import themeRoutes from './routes/theme.routes';
+import docsRoutes from './routes/docs.routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
+import { requestLogger, performanceLogger } from './middleware/requestLogger';
+import { logger } from './utils/logger';
 
 const app = express();
 
@@ -71,6 +74,10 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Request logging
+app.use(requestLogger);
+app.use(performanceLogger(2000)); // Log requests > 2s
+
 // Rate limiting
 app.use('/api/', apiLimiter);
 
@@ -84,6 +91,9 @@ app.get('/health', (_req, res) => {
   });
 });
 
+// API Documentation (no rate limit, no auth)
+app.use('/docs', docsRoutes);
+
 // API routes
 app.use('/api/theme', themeRoutes);
 
@@ -95,27 +105,42 @@ app.use(errorHandler);
 
 // Start server
 const server = app.listen(env.PORT, () => {
-  console.log(`🍝 AI Spaghetti Backend running on port ${env.PORT}`);
-  console.log(`   Environment: ${env.NODE_ENV}`);
-  console.log(`   Health check: http://localhost:${env.PORT}/health`);
-  console.log(`   Theme API: http://localhost:${env.PORT}/api/theme/extract`);
+  logger.info({
+    port: env.PORT,
+    environment: env.NODE_ENV,
+  }, '🍝 AI Spaghetti Backend started');
+
+  logger.info(`   Health check: http://localhost:${env.PORT}/health`);
+  logger.info(`   API Docs: http://localhost:${env.PORT}/docs`);
+  logger.info(`   Theme API: http://localhost:${env.PORT}/api/theme/extract`);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+  logger.info('SIGTERM received. Shutting down gracefully...');
   server.close(() => {
-    console.log('Server closed');
+    logger.info('Server closed');
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received. Shutting down gracefully...');
+  logger.info('SIGINT received. Shutting down gracefully...');
   server.close(() => {
-    console.log('Server closed');
+    logger.info('Server closed');
     process.exit(0);
   });
+});
+
+// Uncaught exception handler
+process.on('uncaughtException', (error) => {
+  logger.fatal({ error: error.message, stack: error.stack }, 'Uncaught exception');
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.fatal({ reason }, 'Unhandled rejection');
+  process.exit(1);
 });
 
 export default app;
