@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/**
+ * Spaghetti AI - Global Styles
+ * Zeplin 디자인 기반 어스톤 컬러 시스템
+ */
+
+:root {
+  /* Background */
+  --background: #F5F5F5;
+  --background-secondary: #EBEBEB;
+  --foreground: #1A1A1A;
+
+  /* Card & Surface */
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --card-hover: #FAFAFA;
+
+  /* Earthy Color Palette */
+  --olive: #5C6356;
+  --olive-light: #7A8172;
+  --olive-dark: #434840;
+
+  --terracotta: #9D7B5B;
+  --terracotta-light: #B99A7D;
+  --terracotta-dark: #7A5F46;
+
+  --sand: #C4B89E;
+  --sand-light: #D9D0BC;
+  --sand-dark: #A69A82;
+
+  --sage: #8B9A7E;
+  --sage-light: #A8B49E;
+  --sage-dark: #6E7A63;
+
+  /* Primary (Olive) */
+  --primary: #5C6356;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #4A5045;
+
+  /* Secondary */
+  --secondary: #EBEBEB;
+  --secondary-foreground: #1A1A1A;
+
+  /* Muted */
+  --muted: #E8E8E8;
+  --muted-foreground: #6B6B6B;
+
+  /* Accent */
+  --accent: #9D7B5B;
+  --accent-foreground: #FFFFFF;
+
+  /* Destructive */
+  --destructive: #D4544C;
+  --destructive-foreground: #FFFFFF;
+
+  /* Border & Input */
+  --border: #E0E0E0;
+  --input: #E0E0E0;
+  --ring: #5C6356;
+
+  /* Radius */
+  --radius: 1rem;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Earthy Colors */
+  --color-olive: var(--olive);
+  --color-olive-light: var(--olive-light);
+  --color-olive-dark: var(--olive-dark);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-light: var(--terracotta-light);
+  --color-terracotta-dark: var(--terracotta-dark);
+  --color-sand: var(--sand);
+  --color-sand-light: var(--sand-light);
+  --color-sand-dark: var(--sand-dark);
+  --color-sage: var(--sage);
+  --color-sage-light: var(--sage-light);
+  --color-sage-dark: var(--sage-dark);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-pill: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1A1A1A;
+    --background-secondary: #242424;
+    --foreground: #F5F5F5;
+
+    --card: #242424;
+    --card-foreground: #F5F5F5;
+    --card-hover: #2A2A2A;
+
+    --primary: #8B9A7E;
+    --primary-foreground: #1A1A1A;
+    --primary-hover: #A8B49E;
+
+    --secondary: #2A2A2A;
+    --secondary-foreground: #F5F5F5;
+
+    --muted: #333333;
+    --muted-foreground: #9A9A9A;
+
+    --accent: #B99A7D;
+    --accent-foreground: #1A1A1A;
+
+    --border: #333333;
+    --input: #333333;
+    --ring: #8B9A7E;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Soft Card */
+.soft-card {
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xl);
+  transition: all 0.2s ease;
+}
+
+.soft-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Pill Button */
+.pill-button {
+  border-radius: var(--radius-pill);
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Color Chip */
+.color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.color-chip:hover {
+  background: var(--secondary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Selection */
+::selection {
+  background: var(--olive);
+  color: white;
+}
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Logo Text Style */
+.logo-text {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
