@@ -32,3 +32,4 @@ export * from "./hct";
 export * from "./ramp";
 export * from "./accessibility";
 export * from "./darkmode";
+export * from "./colorblind";
