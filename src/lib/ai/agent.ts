@@ -324,10 +324,25 @@ JSON 배열만 반환하세요:`,
   private async generatePdf(step: AgentStep): Promise<string> {
     console.log("📄 Generating PDF catalog...");
 
-    // 실제 PDF 생성 로직 (나중에 구현)
-    // @react-pdf/renderer 또는 Puppeteer 사용
+    // 필요한 데이터 수집
+    const productStep = this.task?.steps.find(s => s.name === "extract_product_info");
+    const colorStep = this.task?.steps.find(s => s.name === "extract_brand_colors");
 
-    return "/downloads/catalog-" + Date.now() + ".pdf";
+    const products = productStep?.output as ProductInfo[] || [];
+    const brandColors = colorStep?.output as { primary: string; palette: string[] } | undefined;
+
+    // PDF 생성 (동적 import - 클라이언트 번들에서 제외)
+    const { generateCatalogPDF, productInfoToCatalogData } = await import("../pdf/generator");
+
+    const catalogData = productInfoToCatalogData(products, {
+      title: "Product Catalog",
+      companyName: "Company Name",
+      brandColor: brandColors?.primary,
+    });
+
+    const pdfUrl = await generateCatalogPDF(catalogData);
+
+    return pdfUrl;
   }
 
   /**
