@@ -3,6 +3,8 @@
  * WCAG 2.1 기준: AA (4.5:1 일반, 3:1 대형), AAA (7:1 일반, 4.5:1 대형)
  */
 
+import { hexToRgb } from "./hct";
+
 export interface ContrastResult {
   ratio: number;
   ratioText: string;
@@ -18,18 +20,6 @@ export interface AccessibilityReport {
   background: string;
   contrast: ContrastResult;
   suggestions: string[];
-}
-
-/**
- * HEX를 RGB로 변환
- */
-export function hexToRgb(hex: string): { r: number; g: number; b: number } {
-  const cleanHex = hex.replace('#', '');
-  return {
-    r: parseInt(cleanHex.slice(0, 2), 16),
-    g: parseInt(cleanHex.slice(2, 4), 16),
-    b: parseInt(cleanHex.slice(4, 6), 16),
-  };
 }
 
 /**
