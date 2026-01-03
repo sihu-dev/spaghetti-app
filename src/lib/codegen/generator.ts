@@ -56,6 +56,7 @@ export function generateCssTokens(tokens: TokenContext): string {
       "700": "#404040",
       "800": "#262626",
       "900": "#171717",
+      "950": "#0a0a0a",
     };
     Object.entries(neutralScale).forEach(([key, value]) => {
       lines.push(`  --color-neutral-${key}: ${value};`);
@@ -113,6 +114,7 @@ export function generateTailwindConfig(tokens: TokenContext): string {
             "700": "#404040",
             "800": "#262626",
             "900": "#171717",
+            "950": "#0a0a0a",
           },
         },
         fontFamily: {

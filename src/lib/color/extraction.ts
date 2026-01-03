@@ -18,12 +18,24 @@ export interface ExtractedColor {
 
 /**
  * 이미지 데이터에서 픽셀 배열 추출
+ * @param imageData - 이미지 데이터 객체
+ * @param maxPixels - 최대 샘플링할 픽셀 수 (선택, 성능 최적화용)
  */
-export function getPixelsFromImageData(imageData: ImageData): RgbColor[] {
+export function getPixelsFromImageData(
+  imageData: ImageData,
+  maxPixels?: number
+): RgbColor[] {
   const pixels: RgbColor[] = [];
   const data = imageData.data;
+  const totalPixels = data.length / 4;
 
-  for (let i = 0; i < data.length; i += 4) {
+  // 샘플링 간격 계산 (maxPixels가 지정된 경우)
+  const step =
+    maxPixels && maxPixels < totalPixels
+      ? Math.ceil(totalPixels / maxPixels)
+      : 1;
+
+  for (let i = 0; i < data.length; i += 4 * step) {
     // 투명한 픽셀 건너뛰기
     if (data[i + 3] < 128) continue;
 
@@ -32,6 +44,9 @@ export function getPixelsFromImageData(imageData: ImageData): RgbColor[] {
       g: data[i + 1],
       b: data[i + 2],
     });
+
+    // maxPixels 제한 확인
+    if (maxPixels && pixels.length >= maxPixels) break;
   }
 
   return pixels;

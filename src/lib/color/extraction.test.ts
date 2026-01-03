@@ -6,7 +6,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   kMeansClustering,
-  getPixelsFromImageData,
   selectPrimaryColor,
   filterExtractedColors,
   type ExtractedColor

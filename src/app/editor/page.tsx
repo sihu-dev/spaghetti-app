@@ -10,19 +10,16 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import Link from "next/link";
 import { extractColorsFromImage, selectPrimaryColor, type ExtractedColor } from "@/lib/color/extraction";
-import { generateColorRamp, type ColorScale } from "@/lib/color/ramp";
+import { generateColorRamp, colorScaleToRecord, type ColorScale } from "@/lib/color/ramp";
 import {
   downloadCssVariables,
   downloadTailwindConfig,
-  downloadJsonTokens,
   type ExportData,
 } from "@/lib/export";
 import { generateDesignSystemZip, type TokenContext } from "@/lib/codegen";
 import {
   getContrastRatio,
   getWCAGLevel,
-  getAutoTextColor,
-  type ContrastResult,
 } from "@/lib/color/accessibility";
 import {
   generateThemePalette,
@@ -224,7 +221,7 @@ export default function EditorPage() {
       const tokens: TokenContext = {
         colors: {
           primary: selectedColor,
-          primaryScale: colorRamp as unknown as Record<string, string>,
+          primaryScale: colorScaleToRecord(colorRamp),
         },
         typography: {
           fontFamily: "Pretendard, -apple-system, BlinkMacSystemFont, sans-serif",
