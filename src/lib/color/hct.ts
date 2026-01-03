@@ -1,19 +1,15 @@
 /**
  * HCT (Hue-Chroma-Tone) 색공간 유틸리티
  * Material Design 3 색상 시스템의 핵심
+ *
+ * @material/material-color-utilities 사용
  */
 
 import {
-  converter,
-  formatHex,
-  parse,
-  type Hct,
-  type Rgb
-} from "culori";
-
-// HCT 변환기
-const toHct = converter("hct");
-const toRgb = converter("rgb");
+  Hct,
+  argbFromHex,
+  hexFromArgb,
+} from "@material/material-color-utilities";
 
 export interface HctColor {
   h: number;  // Hue (0-360)
@@ -31,14 +27,12 @@ export interface RgbColor {
  * HEX 색상을 HCT로 변환
  */
 export function hexToHct(hex: string): HctColor {
-  const color = toHct(hex);
-  if (!color) {
-    throw new Error(`Invalid hex color: ${hex}`);
-  }
+  const argb = argbFromHex(hex);
+  const hct = Hct.fromInt(argb);
   return {
-    h: color.h ?? 0,
-    c: color.c ?? 0,
-    t: color.t ?? 0,
+    h: hct.hue,
+    c: hct.chroma,
+    t: hct.tone,
   };
 }
 
@@ -46,28 +40,19 @@ export function hexToHct(hex: string): HctColor {
  * HCT 색상을 HEX로 변환
  */
 export function hctToHex(hct: HctColor): string {
-  const color: Hct = {
-    mode: "hct",
-    h: hct.h,
-    c: hct.c,
-    t: hct.t,
-  };
-  const hex = formatHex(color);
-  return hex ?? "#000000";
+  const hctColor = Hct.from(hct.h, hct.c, hct.t);
+  return hexFromArgb(hctColor.toInt());
 }
 
 /**
  * HEX 색상을 RGB로 변환
  */
 export function hexToRgb(hex: string): RgbColor {
-  const color = toRgb(hex);
-  if (!color) {
-    throw new Error(`Invalid hex color: ${hex}`);
-  }
+  const argb = argbFromHex(hex);
   return {
-    r: Math.round((color.r ?? 0) * 255),
-    g: Math.round((color.g ?? 0) * 255),
-    b: Math.round((color.b ?? 0) * 255),
+    r: (argb >> 16) & 0xff,
+    g: (argb >> 8) & 0xff,
+    b: argb & 0xff,
   };
 }
 
@@ -75,13 +60,8 @@ export function hexToRgb(hex: string): RgbColor {
  * RGB 색상을 HEX로 변환
  */
 export function rgbToHex(rgb: RgbColor): string {
-  const color: Rgb = {
-    mode: "rgb",
-    r: rgb.r / 255,
-    g: rgb.g / 255,
-    b: rgb.b / 255,
-  };
-  return formatHex(color) ?? "#000000";
+  const argb = (255 << 24) | (rgb.r << 16) | (rgb.g << 8) | rgb.b;
+  return hexFromArgb(argb);
 }
 
 /**
@@ -118,8 +98,9 @@ export function adjustChroma(hex: string, targetChroma: number): string {
  * 색상이 유효한 HEX인지 확인
  */
 export function isValidHex(hex: string): boolean {
-  const parsed = parse(hex);
-  return parsed !== undefined;
+  if (!hex || typeof hex !== "string") return false;
+  const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
+  return /^[0-9A-Fa-f]{6}$/.test(cleanHex) || /^[0-9A-Fa-f]{3}$/.test(cleanHex);
 }
 
 /**
