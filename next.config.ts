@@ -38,26 +38,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Webpack configuration for bundle analysis
-  webpack: (config, { isServer }) => {
-    // Bundle analyzer (only when ANALYZE=true)
-    if (process.env.ANALYZE === "true") {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerMode: "static",
-          reportFilename: isServer
-            ? "../analyze/server.html"
-            : "./analyze/client.html",
-          openAnalyzer: false,
-        })
-      );
-    }
-
-    return config;
-  },
-
   // Headers for security
   async headers() {
     return [
