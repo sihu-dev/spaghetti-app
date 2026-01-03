@@ -1,0 +1,43 @@
+{
+  "name": "@spaghetti-ai/mcp-server",
+  "version": "1.0.0",
+  "description": "Spaghetti AI - Material Design 3 Design System Generator MCP Server",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "spaghetti-mcp": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/server.js",
+    "test": "npx tsx test.ts"
+  },
+  "keywords": [
+    "mcp",
+    "design-system",
+    "material-design",
+    "color",
+    "tailwind",
+    "figma",
+    "tokens"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@material/material-color-utilities": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "sharp": "^0.34.5",
+    "zod": "^3.24.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "typescript": "^5.9.3"
+  }
+}

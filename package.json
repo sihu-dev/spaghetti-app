@@ -17,8 +17,11 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@material/material-color-utilities": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.25.1",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "class-variance-authority": "^0.7.1",
