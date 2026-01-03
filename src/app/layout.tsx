@@ -3,9 +3,9 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Spaghetti AI - Design System Generator",
+  title: "CATALOG.AI - AI 제품 카탈로그 자동 생성",
   description:
-    "이미지 한 장으로 디자인 시스템을 만드세요. HCT 알고리즘 기반 컬러 추출 및 토큰 자동 생성.",
+    "제품 사진만으로 전문 카탈로그를 5분 만에. AI가 스펙 추출, 브랜드 컬러 분석, 다국어 번역까지 자동으로 처리합니다.",
 };
 
 export default function RootLayout({
