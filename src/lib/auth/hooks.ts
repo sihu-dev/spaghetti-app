@@ -50,16 +50,18 @@ export function useAuth() {
         // 인증 상태 변경 구독
         const {
           data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-          if (mounted) {
-            setState({
-              user: session?.user ?? null,
-              session,
-              isLoading: false,
-              error: null,
-            });
+        } = supabase.auth.onAuthStateChange(
+          (_event: string, session: Session | null) => {
+            if (mounted) {
+              setState({
+                user: session?.user ?? null,
+                session,
+                isLoading: false,
+                error: null,
+              });
+            }
           }
-        });
+        );
 
         return () => {
           subscription.unsubscribe();

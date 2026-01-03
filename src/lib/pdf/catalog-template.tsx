@@ -283,7 +283,7 @@ const ProductPage: React.FC<{
                 key={key}
                 style={[
                   styles.specRow,
-                  index === arr.length - 1 && styles.specRowLast,
+                  ...(index === arr.length - 1 ? [styles.specRowLast] : []),
                 ]}
               >
                 <Text style={styles.specLabel}>
