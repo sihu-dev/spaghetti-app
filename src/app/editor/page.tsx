@@ -26,6 +26,7 @@ import {
   exportThemeAsCSS,
   type ThemePalette,
 } from "@/lib/color/darkmode";
+import { DEMO_PRESETS } from "@/config/presets";
 
 interface UploadedImage {
   id: string;
@@ -35,14 +36,6 @@ interface UploadedImage {
 
 type PreviewTab = "buttons" | "forms" | "cards";
 type SidebarTab = "colors" | "accessibility" | "darkmode";
-
-const DEMO_PRESETS = [
-  { name: "Olive", hex: "#5C6356" },
-  { name: "Terracotta", hex: "#9D7B5B" },
-  { name: "Ocean", hex: "#2563EB" },
-  { name: "Berry", hex: "#9333EA" },
-  { name: "Coral", hex: "#F43F5E" },
-];
 
 export default function EditorPage() {
   const [images, setImages] = useState<UploadedImage[]>([]);
