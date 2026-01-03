@@ -23,3 +23,5 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+<!-- Push test: Sat Jan  3 20:11:02 KST 2026 -->
