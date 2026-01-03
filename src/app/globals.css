@@ -6,58 +6,66 @@
  */
 
 :root {
+  /* Typography */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
   /* Background */
-  --background: #F5F5F5;
-  --background-secondary: #EBEBEB;
-  --foreground: #1A1A1A;
+  --background: #f5f5f5;
+  --background-secondary: #ebebeb;
+  --foreground: #1a1a1a;
 
   /* Card & Surface */
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --card-hover: #FAFAFA;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --card-hover: #fafafa;
 
   /* Earthy Color Palette */
-  --olive: #5C6356;
-  --olive-light: #7A8172;
+  --olive: #5c6356;
+  --olive-light: #7a8172;
   --olive-dark: #434840;
 
-  --terracotta: #9D7B5B;
-  --terracotta-light: #B99A7D;
-  --terracotta-dark: #7A5F46;
+  --terracotta: #9d7b5b;
+  --terracotta-light: #b99a7d;
+  --terracotta-dark: #7a5f46;
 
-  --sand: #C4B89E;
-  --sand-light: #D9D0BC;
-  --sand-dark: #A69A82;
+  --sand: #c4b89e;
+  --sand-light: #d9d0bc;
+  --sand-dark: #a69a82;
 
-  --sage: #8B9A7E;
-  --sage-light: #A8B49E;
-  --sage-dark: #6E7A63;
+  --sage: #8b9a7e;
+  --sage-light: #a8b49e;
+  --sage-dark: #6e7a63;
 
   /* Primary (Olive) */
-  --primary: #5C6356;
-  --primary-foreground: #FFFFFF;
-  --primary-hover: #4A5045;
+  --primary: #5c6356;
+  --primary-foreground: #ffffff;
+  --primary-hover: #4a5045;
 
   /* Secondary */
-  --secondary: #EBEBEB;
-  --secondary-foreground: #1A1A1A;
+  --secondary: #ebebeb;
+  --secondary-foreground: #1a1a1a;
 
   /* Muted */
-  --muted: #E8E8E8;
-  --muted-foreground: #6B6B6B;
+  --muted: #e8e8e8;
+  --muted-foreground: #6b6b6b;
 
   /* Accent */
-  --accent: #9D7B5B;
-  --accent-foreground: #FFFFFF;
+  --accent: #9d7b5b;
+  --accent-foreground: #ffffff;
 
   /* Destructive */
-  --destructive: #D4544C;
-  --destructive-foreground: #FFFFFF;
+  --destructive: #d4544c;
+  --destructive-foreground: #ffffff;
 
   /* Border & Input */
-  --border: #E0E0E0;
-  --input: #E0E0E0;
-  --ring: #5C6356;
+  --border: #e0e0e0;
+  --input: #e0e0e0;
+  --ring: #5c6356;
 
   /* Radius */
   --radius: 1rem;
@@ -104,8 +112,8 @@
   --color-sage-light: var(--sage-light);
   --color-sage-dark: var(--sage-dark);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

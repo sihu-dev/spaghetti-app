@@ -265,3 +265,14 @@ export function generateSurfaceColors(
     surfaceContainerHighest: neutralRamp[300],
   };
 }
+
+/**
+ * ColorScale을 Record<string, string>으로 변환
+ */
+export function colorScaleToRecord(scale: ColorScale): Record<string, string> {
+  const result: Record<string, string> = {};
+  SCALE_KEYS.forEach((key) => {
+    result[key.toString()] = scale[key];
+  });
+  return result;
+}

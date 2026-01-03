@@ -61,17 +61,17 @@ export function generateDarkColorScale(lightScale: ColorScale): ColorScale {
   // 다크모드에서는 톤을 반전시키되, 완전히 뒤집지는 않음
   // 50 -> 900, 100 -> 800 ... 대신 부드럽게 조정
   return {
-    '50': lightScale['950'],
-    '100': lightScale['900'],
-    '200': lightScale['800'],
-    '300': lightScale['700'],
-    '400': lightScale['600'],
-    '500': lightScale['500'],
-    '600': lightScale['400'],
-    '700': lightScale['300'],
-    '800': lightScale['200'],
-    '900': lightScale['100'],
-    '950': lightScale['50'],
+    50: lightScale[950],
+    100: lightScale[900],
+    200: lightScale[800],
+    300: lightScale[700],
+    400: lightScale[600],
+    500: lightScale[500],
+    600: lightScale[400],
+    700: lightScale[300],
+    800: lightScale[200],
+    900: lightScale[100],
+    950: lightScale[50],
   };
 }
 
@@ -80,7 +80,7 @@ export function generateDarkColorScale(lightScale: ColorScale): ColorScale {
  */
 export function generateLightSemanticTokens(
   colorScale: ColorScale,
-  primaryColor: string
+  _primaryColor: string
 ): SemanticTokens {
   return {
     // 배경
@@ -227,7 +227,7 @@ function camelToKebab(str: string): string {
 /**
  * Tailwind 설정으로 내보내기
  */
-export function exportThemeAsTailwind(palette: ThemePalette): object {
+export function exportThemeAsTailwind(_palette: ThemePalette): object {
   return {
     colors: {
       background: 'var(--background)',

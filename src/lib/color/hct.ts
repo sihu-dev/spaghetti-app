@@ -12,22 +12,54 @@ import {
 } from "@material/material-color-utilities";
 
 export interface HctColor {
-  h: number;  // Hue (0-360)
-  c: number;  // Chroma (0-150+)
-  t: number;  // Tone (0-100)
+  h: number; // Hue (0-360)
+  c: number; // Chroma (0-150+)
+  t: number; // Tone (0-100)
 }
 
 export interface RgbColor {
-  r: number;  // Red (0-255)
-  g: number;  // Green (0-255)
-  b: number;  // Blue (0-255)
+  r: number; // Red (0-255)
+  g: number; // Green (0-255)
+  b: number; // Blue (0-255)
+}
+
+/**
+ * HEX 색상을 정규화 (3자리 -> 6자리, # 추가)
+ */
+export function normalizeHex(hex: string): string {
+  if (!hex || typeof hex !== "string") {
+    throw new Error("Invalid HEX color: input must be a non-empty string");
+  }
+
+  let cleanHex = hex.trim();
+
+  // # 제거
+  if (cleanHex.startsWith("#")) {
+    cleanHex = cleanHex.slice(1);
+  }
+
+  // 3자리 HEX를 6자리로 확장
+  if (/^[0-9A-Fa-f]{3}$/.test(cleanHex)) {
+    cleanHex = cleanHex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+
+  // 유효성 검사
+  if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex)) {
+    throw new Error(`Invalid HEX color: ${hex}`);
+  }
+
+  return "#" + cleanHex.toUpperCase();
 }
 
 /**
  * HEX 색상을 HCT로 변환
  */
 export function hexToHct(hex: string): HctColor {
-  const argb = argbFromHex(hex);
+  const normalizedHex = normalizeHex(hex);
+  const argb = argbFromHex(normalizedHex);
   const hct = Hct.fromInt(argb);
   return {
     h: hct.hue,

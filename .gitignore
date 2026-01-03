@@ -10,6 +10,10 @@
 
 # testing
 /coverage
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
 
 # next.js
 /.next/
@@ -17,6 +21,10 @@
 
 # production
 /build
+/dist
+
+# bundle analyzer
+/analyze
 
 # misc
 .DS_Store
@@ -38,3 +46,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo

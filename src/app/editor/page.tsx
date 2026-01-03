@@ -10,19 +10,16 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import Link from "next/link";
 import { extractColorsFromImage, selectPrimaryColor, type ExtractedColor } from "@/lib/color/extraction";
-import { generateColorRamp, type ColorScale } from "@/lib/color/ramp";
+import { generateColorRamp, colorScaleToRecord, type ColorScale } from "@/lib/color/ramp";
 import {
   downloadCssVariables,
   downloadTailwindConfig,
-  downloadJsonTokens,
   type ExportData,
 } from "@/lib/export";
 import { generateDesignSystemZip, type TokenContext } from "@/lib/codegen";
 import {
   getContrastRatio,
   getWCAGLevel,
-  getAutoTextColor,
-  type ContrastResult,
 } from "@/lib/color/accessibility";
 import {
   generateThemePalette,
@@ -166,12 +163,12 @@ export default function EditorPage() {
     maxFiles: 5,
   });
 
-  const handleColorSelect = (hex: string) => {
+  const handleColorSelect = useCallback((hex: string) => {
     setSelectedColor(hex);
     setColorRamp(generateColorRamp(hex));
-  };
+  }, []);
 
-  const handleDemoPreset = (hex: string) => {
+  const handleDemoPreset = useCallback((hex: string) => {
     setIsDemoMode(true);
     setSelectedColor(hex);
     setColorRamp(generateColorRamp(hex));
@@ -181,9 +178,9 @@ export default function EditorPage() {
       hct: { h: 0, c: 0, t: 0 },
       percentage: 20,
     })));
-  };
+  }, []);
 
-  const resetAll = () => {
+  const resetAll = useCallback(() => {
     setImages([]);
     setExtractedColors([]);
     setSelectedColor(null);
@@ -191,9 +188,9 @@ export default function EditorPage() {
     setIsDemoMode(false);
     setPreviewDarkMode(false);
     setExtractError(null);
-  };
+  }, []);
 
-  const getExportData = (): ExportData | null => {
+  const getExportData = useCallback((): ExportData | null => {
     if (!selectedColor || !colorRamp) return null;
     return {
       primaryColor: selectedColor,
@@ -201,9 +198,9 @@ export default function EditorPage() {
       extractedColors,
       projectName: "Spaghetti Design System",
     };
-  };
+  }, [selectedColor, colorRamp, extractedColors]);
 
-  const handleExportThemeCSS = () => {
+  const handleExportThemeCSS = useCallback(() => {
     if (!themePalette) return;
     const css = exportThemeAsCSS(themePalette);
     const blob = new Blob([css], { type: "text/css" });
@@ -215,16 +212,16 @@ export default function EditorPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
+  }, [themePalette]);
 
-  const handleExportZip = async () => {
+  const handleExportZip = useCallback(async () => {
     if (!selectedColor || !colorRamp) return;
     setIsExporting(true);
     try {
       const tokens: TokenContext = {
         colors: {
           primary: selectedColor,
-          primaryScale: colorRamp as unknown as Record<string, string>,
+          primaryScale: colorScaleToRecord(colorRamp),
         },
         typography: {
           fontFamily: "Pretendard, -apple-system, BlinkMacSystemFont, sans-serif",
@@ -254,7 +251,7 @@ export default function EditorPage() {
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [selectedColor, colorRamp]);
 
   const canExport = selectedColor && colorRamp;
   const currentTheme = previewDarkMode ? themePalette?.dark : themePalette?.light;
@@ -328,9 +325,9 @@ export default function EditorPage() {
               </div>
 
               <div className="flex items-center gap-4 my-10">
-                <div className="flex-1 h-px bg-white/10"></div>
+                <div className="flex-1 h-px bg-white/10" />
                 <span className="text-sm text-white/30">또는</span>
-                <div className="flex-1 h-px bg-white/10"></div>
+                <div className="flex-1 h-px bg-white/10" />
               </div>
 
               <div className="flex flex-wrap justify-center gap-3">
@@ -441,9 +438,9 @@ export default function EditorPage() {
                       <div>
                         <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">팔레트</div>
                         <div className="flex flex-wrap gap-2">
-                          {extractedColors.map((color, i) => (
+                          {extractedColors.map((color) => (
                             <button
-                              key={i}
+                              key={color.hex}
                               onClick={() => handleColorSelect(color.hex)}
                               className={`w-10 h-10 rounded-xl transition-all duration-200 ${
                                 selectedColor === color.hex
@@ -480,8 +477,8 @@ export default function EditorPage() {
                     <div>
                       <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">WCAG 대비비 검사</div>
                       <div className="space-y-3">
-                        {accessibilityData.map((check, i) => (
-                          <div key={i} className="bg-white/5 rounded-xl p-4">
+                        {accessibilityData.map((check) => (
+                          <div key={check.name} className="bg-white/5 rounded-xl p-4">
                             <div className="flex items-center justify-between mb-3">
                               <span className="text-sm text-white/70">{check.name}</span>
                               <span className={`text-xs font-bold px-2 py-1 rounded ${
