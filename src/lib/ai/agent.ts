@@ -3,13 +3,13 @@
  * 목표만 주면 전체 카탈로그 생성 프로세스를 자동 수행
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { extractProductInfo, type ProductInfo } from "./vision";
 import { extractColorsFromImage } from "../color/extraction";
 import { generateColorRamp } from "../color/ramp";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export interface AgentTask {
@@ -64,8 +64,8 @@ export class CatalogAgent {
    * 목표 이해 및 계획 수립
    */
   async planSteps(goal: string): Promise<AgentStep[]> {
-    const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
       max_tokens: 1024,
       messages: [
         {
@@ -92,12 +92,9 @@ JSON 배열만 반환하세요:`,
       ],
     });
 
-    const content = response.content[0];
-    if (content.type !== "text") {
-      throw new Error("Invalid response from AI");
-    }
+    const responseText = response.choices[0]?.message?.content || "";
 
-    const jsonMatch = content.text.match(/\[[\s\S]*\]/);
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
       throw new Error("Failed to parse plan from AI");
     }

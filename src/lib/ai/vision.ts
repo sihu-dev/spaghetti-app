@@ -1,9 +1,9 @@
 /**
  * AI Vision - 제품 이미지 분석
- * Claude 3.5 Sonnet Vision API를 사용하여 제품 정보 자동 추출
+ * OpenAI GPT-4o Vision API를 사용하여 제품 정보 자동 추출
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 export interface ProductInfo {
   modelName: string | null;
@@ -16,25 +16,9 @@ export interface ProductInfo {
   confidence: "high" | "medium" | "low";
 }
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
-/**
- * 이미지를 base64로 변환
- */
-async function imageUrlToBase64(imageUrl: string): Promise<string> {
-  if (imageUrl.startsWith("data:")) {
-    // 이미 base64인 경우
-    return imageUrl.split(",")[1];
-  }
-
-  const response = await fetch(imageUrl);
-  const blob = await response.blob();
-  const arrayBuffer = await blob.arrayBuffer();
-  const base64 = Buffer.from(arrayBuffer).toString("base64");
-  return base64;
-}
 
 /**
  * 제품 이미지에서 정보 자동 추출
@@ -53,21 +37,17 @@ export async function extractProductInfo(
   imageUrl: string
 ): Promise<ProductInfo> {
   try {
-    const base64Image = await imageUrlToBase64(imageUrl);
-
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
       max_tokens: 1024,
       messages: [
         {
           role: "user",
           content: [
             {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: "image/jpeg",
-                data: base64Image,
+              type: "image_url",
+              image_url: {
+                url: imageUrl,
               },
             },
             {
@@ -114,8 +94,7 @@ export async function extractProductInfo(
       ],
     });
 
-    const responseText =
-      message.content[0].type === "text" ? message.content[0].text : "";
+    const responseText = response.choices[0]?.message?.content || "";
 
     // JSON 추출 (코드 블록 제거)
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -155,21 +134,17 @@ export async function detectProductCategory(
   imageUrl: string
 ): Promise<string> {
   try {
-    const base64Image = await imageUrlToBase64(imageUrl);
-
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
       max_tokens: 100,
       messages: [
         {
           role: "user",
           content: [
             {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: "image/jpeg",
-                data: base64Image,
+              type: "image_url",
+              image_url: {
+                url: imageUrl,
               },
             },
             {
@@ -181,10 +156,7 @@ export async function detectProductCategory(
       ],
     });
 
-    const category =
-      message.content[0].type === "text"
-        ? message.content[0].text.trim()
-        : "기타";
+    const category = response.choices[0]?.message?.content?.trim() || "기타";
     return category;
   } catch (error) {
     console.error("Category detection error:", error);

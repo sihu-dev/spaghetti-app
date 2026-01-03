@@ -3,6 +3,7 @@
  * React-PDF로 카탈로그 생성 및 저장
  */
 
+import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CatalogDocument, type CatalogData } from "./catalog-template";
 import { writeFile, mkdir } from "fs/promises";
