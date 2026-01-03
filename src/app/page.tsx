@@ -48,9 +48,9 @@ export default function Home() {
           <div className="bg-white rounded-3xl shadow-xl border border-[#E5E5E5] overflow-hidden">
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#E5E5E5] bg-[#FAFAFA]">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#FF5F57]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#28CA41]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
+                <div className="w-3 h-3 rounded-full bg-[#28CA41]" />
               </div>
               <span className="text-xs text-[#999] ml-2">spaghetti.app/editor</span>
             </div>
@@ -69,12 +69,12 @@ export default function Home() {
                   <div className="space-y-3">
                     <div className="flex gap-2">
                       {["#5C6356", "#6B7361", "#7A8172", "#8B9A7E", "#9DA88F"].map((color) => (
-                        <div key={color} className="flex-1 aspect-square rounded-lg shadow-sm" style={{ backgroundColor: color }}></div>
+                        <div key={color} className="flex-1 aspect-square rounded-lg shadow-sm" style={{ backgroundColor: color }} />
                       ))}
                     </div>
                     <div className="flex gap-2">
                       {["#C4B89E", "#D4C4A8", "#E4D4B8", "#F4E4C8", "#FFF8E8"].map((color) => (
-                        <div key={color} className="flex-1 aspect-square rounded-lg shadow-sm" style={{ backgroundColor: color }}></div>
+                        <div key={color} className="flex-1 aspect-square rounded-lg shadow-sm" style={{ backgroundColor: color }} />
                       ))}
                     </div>
                     <div className="bg-[#F5F5F5] rounded-lg p-3 font-mono text-xs text-[#666]">
