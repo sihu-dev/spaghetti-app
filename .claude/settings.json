@@ -1,0 +1,24 @@
+{
+  "_project": "Spaghetti AI - Design System Generator",
+  "_description": "프로젝트 레벨 Claude Code 설정",
+
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash(npm run *)",
+      "Bash(pnpm *)",
+      "Bash(git *)",
+      "Bash(vitest *)"
+    ]
+  },
+
+  "contextInstructions": [
+    "이 프로젝트는 Next.js 16 + React 19 + Tailwind CSS v4 기반입니다",
+    "컬러 시스템은 Material Design 3의 HCT 알고리즘을 사용합니다",
+    "테스트는 Vitest를 사용합니다 (pnpm run test)",
+    "코드 변경 후 반드시 pnpm run lint && pnpm run build 실행",
+    "uniLAB 프로젝트와 완전히 별개입니다 - 혼동 주의"
+  ]
+}
