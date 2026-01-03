@@ -270,17 +270,9 @@ export function generateSurfaceColors(
  * ColorScale을 Record<string, string>으로 변환
  */
 export function colorScaleToRecord(scale: ColorScale): Record<string, string> {
-  return {
-    "50": scale[50],
-    "100": scale[100],
-    "200": scale[200],
-    "300": scale[300],
-    "400": scale[400],
-    "500": scale[500],
-    "600": scale[600],
-    "700": scale[700],
-    "800": scale[800],
-    "900": scale[900],
-    "950": scale[950],
-  };
+  const result: Record<string, string> = {};
+  SCALE_KEYS.forEach((key) => {
+    result[key.toString()] = scale[key];
+  });
+  return result;
 }
