@@ -1,6 +1,7 @@
 import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import React, { forwardRef } from 'react'
+import Image from 'next/image'
 import { TouchTarget } from './button'
 import { Link } from './link'
 
@@ -45,7 +46,11 @@ export function Avatar({
           </text>
         </svg>
       )}
-      {src && <img className="size-full" src={src} alt={alt} />}
+      {src && (
+        <span className="size-full relative block">
+          <Image src={src} alt={alt} fill className="object-cover" />
+        </span>
+      )}
     </span>
   )
 }
@@ -65,7 +70,7 @@ export const AvatarButton = forwardRef(function AvatarButton(
     ),
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  let classes = clsx(
+  const classes = clsx(
     className,
     square ? 'rounded-[20%]' : 'rounded-full',
     'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'

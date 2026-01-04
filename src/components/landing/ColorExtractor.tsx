@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import {
   extractColorsFromImage,
@@ -232,11 +233,9 @@ export function ColorExtractor() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Uploaded"
-                  className="w-12 h-12 rounded-lg object-cover"
-                />
+                <div className="w-12 h-12 rounded-lg relative overflow-hidden">
+                  <Image src={imagePreview} alt="Uploaded" fill className="object-cover" />
+                </div>
               )}
               <div>
                 <div className="text-xs text-[#999] uppercase tracking-wider">
