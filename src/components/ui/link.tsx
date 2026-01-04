@@ -8,14 +8,24 @@
 
 import * as Headless from '@headlessui/react'
 import React, { forwardRef } from 'react'
+import NextLink from 'next/link'
 
 export const Link = forwardRef(function Link(
   props: { href: string } & React.ComponentPropsWithoutRef<'a'>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
+  const { href, ...rest } = props
+  const isExternal = href?.startsWith('http') || href?.startsWith('mailto:') || href?.startsWith('tel:')
+
   return (
     <Headless.DataInteractive>
-      <a {...props} ref={ref} />
+      {isExternal ? (
+        <a href={href} {...rest} ref={ref} />
+      ) : (
+        <NextLink href={href}>
+          <a {...rest} ref={ref} />
+        </NextLink>
+      )}
     </Headless.DataInteractive>
   )
 })

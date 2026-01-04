@@ -2,6 +2,7 @@
  * Environment validation tests
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   validateServerEnv,
@@ -26,25 +27,25 @@ describe("env", () => {
 
   describe("validateServerEnv", () => {
     it("should validate with default NODE_ENV", () => {
-      delete process.env.NODE_ENV;
+      (process.env as any).NODE_ENV = undefined;
       const env = validateServerEnv();
       expect(env.NODE_ENV).toBe("development");
     });
 
     it("should accept development environment", () => {
-      process.env.NODE_ENV = "development";
+      (process.env as any).NODE_ENV = "development";
       const env = validateServerEnv();
       expect(env.NODE_ENV).toBe("development");
     });
 
     it("should accept production environment", () => {
-      process.env.NODE_ENV = "production";
+      (process.env as any).NODE_ENV = "production";
       const env = validateServerEnv();
       expect(env.NODE_ENV).toBe("production");
     });
 
     it("should accept test environment", () => {
-      process.env.NODE_ENV = "test";
+      (process.env as any).NODE_ENV = "test";
       const env = validateServerEnv();
       expect(env.NODE_ENV).toBe("test");
     });
@@ -98,21 +99,21 @@ describe("env", () => {
 
   describe("environment checks", () => {
     it("isProduction returns true in production", () => {
-      process.env.NODE_ENV = "production";
+      (process.env as any).NODE_ENV = "production";
       expect(isProduction()).toBe(true);
       expect(isDevelopment()).toBe(false);
       expect(isTest()).toBe(false);
     });
 
     it("isDevelopment returns true in development", () => {
-      process.env.NODE_ENV = "development";
+      (process.env as any).NODE_ENV = "development";
       expect(isProduction()).toBe(false);
       expect(isDevelopment()).toBe(true);
       expect(isTest()).toBe(false);
     });
 
     it("isTest returns true in test", () => {
-      process.env.NODE_ENV = "test";
+      (process.env as any).NODE_ENV = "test";
       expect(isProduction()).toBe(false);
       expect(isDevelopment()).toBe(false);
       expect(isTest()).toBe(true);

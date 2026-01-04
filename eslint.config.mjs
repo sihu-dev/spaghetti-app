@@ -16,12 +16,14 @@ const eslintConfig = [
       ".next/**",
       "out/**",
       "dist/**",
+      "mcp/dist/**",
       "build/**",
       "coverage/**",
       "analyze/**",
     ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals"),
+  ...compat.extends("next/typescript"),
   {
     rules: {
       // TypeScript strict rules
