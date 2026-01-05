@@ -1,0 +1,39 @@
+{
+  "claudeCode.selectedModel": "default",
+  "claudeCode.useTerminal": true,
+  "workbench.activityBar.visible": true,
+  "workbench.sideBar.location": "left",
+  "workbench.startupEditor": "none",
+  "window.menuBarVisibility": "default",
+  "extensions.autoUpdate": true,
+  "extensions.autoCheckUpdates": true,
+  "extensions.ignoreRecommendations": false,
+  "workbench.enableExperiments": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll.eslint": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "security.workspace.trust.enabled": true,
+  "telemetry.enableTelemetry": false,
+  "telemetry.enableCrashReporter": false,
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.editor.openSideBySideDirection": "right",
+  "workbench.editor.showTabs": true,
+  "workbench.editor.enablePreview": false,
+  "terminal.integrated.defaultLocation": "panel",
+  "workbench.statusBar.visible": true,
+  "workbench.editor.restoreViewState": true,
+
+  // Claude Code (Anthropic) recommended settings
+  "claudeCode.selectedModel": "claude-opus-4-5",
+  "claudeCode.useTerminal": false,
+  "claudeCode.initialPermissionMode": "prompt",
+  "claudeCode.preferredLocation": "sidebar",
+  "claudeCode.autosave": true,
+  "claudeCode.useCtrlEnterToSend": true,
+  "claudeCode.respectGitIgnore": true,
+  "claudeCode.allowDangerouslySkipPermissions": false
+}
