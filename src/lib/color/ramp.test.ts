@@ -19,7 +19,9 @@ describe("Color Ramp", () => {
   describe("generateColorRamp", () => {
     it("should generate all scale keys", () => {
       const ramp = generateColorRamp("#5C6356");
-      const keys: ScaleKey[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+      const keys: ScaleKey[] = [
+        50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+      ];
 
       keys.forEach((key) => {
         expect(ramp[key]).toBeDefined();

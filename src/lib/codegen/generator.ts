@@ -155,7 +155,7 @@ export function generateJsonTokens(tokens: TokenContext): string {
           acc[key] = { $value: value, $type: "color" };
           return acc;
         },
-        {} as Record<string, { $value: string; $type: string }>
+        {} as Record<string, { $value: string; $type: string }>,
       ),
     },
     typography: {
@@ -168,7 +168,7 @@ export function generateJsonTokens(tokens: TokenContext): string {
           acc[key] = { $value: value, $type: "fontSize" };
           return acc;
         },
-        {} as Record<string, { $value: string; $type: string }>
+        {} as Record<string, { $value: string; $type: string }>,
       ),
     },
     spacing: Object.entries(tokens.spacing).reduce(
@@ -176,14 +176,14 @@ export function generateJsonTokens(tokens: TokenContext): string {
         acc[key] = { $value: value, $type: "spacing" };
         return acc;
       },
-      {} as Record<string, { $value: string; $type: string }>
+      {} as Record<string, { $value: string; $type: string }>,
     ),
     radius: Object.entries(tokens.radius).reduce(
       (acc, [key, value]) => {
         acc[key] = { $value: value, $type: "borderRadius" };
         return acc;
       },
-      {} as Record<string, { $value: string; $type: string }>
+      {} as Record<string, { $value: string; $type: string }>,
     ),
   };
 
@@ -290,7 +290,7 @@ export function generateComponentIndex(components: string[]): string {
  * 전체 디자인 시스템 ZIP 생성
  */
 export async function generateDesignSystemZip(
-  context: CodeGenContext
+  context: CodeGenContext,
 ): Promise<Blob> {
   const zip = new JSZip();
   const tokens = context.tokens || DEFAULT_TOKENS;
@@ -323,7 +323,7 @@ export async function generateDesignSystemZip(
   // index.ts 생성
   componentsFolder?.file(
     "index.ts",
-    generateComponentIndex(componentFiles.map((c) => c.name))
+    generateComponentIndex(componentFiles.map((c) => c.name)),
   );
 
   // README.md

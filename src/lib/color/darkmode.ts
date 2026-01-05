@@ -3,7 +3,7 @@
  * 라이트 팔레트에서 다크 팔레트 자동 생성
  */
 
-import { generateColorRamp, type ColorScale } from './ramp';
+import { generateColorRamp, type ColorScale } from "./ramp";
 
 export interface DarkModeConfig {
   // 배경색 톤 (0-20 권장)
@@ -80,39 +80,39 @@ export function generateDarkColorScale(lightScale: ColorScale): ColorScale {
  */
 export function generateLightSemanticTokens(
   colorScale: ColorScale,
-  _primaryColor: string
+  _primaryColor: string,
 ): SemanticTokens {
   return {
     // 배경
-    background: '#FFFFFF',
-    backgroundAlt: '#FAFAFA',
+    background: "#FFFFFF",
+    backgroundAlt: "#FAFAFA",
 
     // 표면
-    surface: '#FFFFFF',
-    surfaceAlt: colorScale['50'],
-    surfaceHover: colorScale['100'],
+    surface: "#FFFFFF",
+    surfaceAlt: colorScale["50"],
+    surfaceHover: colorScale["100"],
 
     // 테두리
-    border: '#E5E5E5',
-    borderAlt: colorScale['200'],
+    border: "#E5E5E5",
+    borderAlt: colorScale["200"],
 
     // 텍스트
-    textPrimary: '#1A1A1A',
-    textSecondary: '#666666',
-    textMuted: '#999999',
-    textInverse: '#FFFFFF',
+    textPrimary: "#1A1A1A",
+    textSecondary: "#666666",
+    textMuted: "#999999",
+    textInverse: "#FFFFFF",
 
     // Primary
-    primary: colorScale['500'],
-    primaryHover: colorScale['600'],
-    primaryActive: colorScale['700'],
-    onPrimary: '#FFFFFF',
+    primary: colorScale["500"],
+    primaryHover: colorScale["600"],
+    primaryActive: colorScale["700"],
+    onPrimary: "#FFFFFF",
 
     // 상태
-    success: '#10B981',
-    warning: '#F59E0B',
-    error: '#EF4444',
-    info: '#3B82F6',
+    success: "#10B981",
+    warning: "#F59E0B",
+    error: "#EF4444",
+    info: "#3B82F6",
   };
 }
 
@@ -121,39 +121,39 @@ export function generateLightSemanticTokens(
  */
 export function generateDarkSemanticTokens(
   colorScale: ColorScale,
-  darkColorScale: ColorScale
+  darkColorScale: ColorScale,
 ): SemanticTokens {
   return {
     // 배경 (진한 회색)
-    background: '#0A0A0A',
-    backgroundAlt: '#111111',
+    background: "#0A0A0A",
+    backgroundAlt: "#111111",
 
     // 표면 (약간 밝은 회색)
-    surface: '#1A1A1A',
-    surfaceAlt: '#222222',
-    surfaceHover: '#2A2A2A',
+    surface: "#1A1A1A",
+    surfaceAlt: "#222222",
+    surfaceHover: "#2A2A2A",
 
     // 테두리
-    border: '#333333',
-    borderAlt: '#444444',
+    border: "#333333",
+    borderAlt: "#444444",
 
     // 텍스트
-    textPrimary: '#FFFFFF',
-    textSecondary: '#A0A0A0',
-    textMuted: '#666666',
-    textInverse: '#1A1A1A',
+    textPrimary: "#FFFFFF",
+    textSecondary: "#A0A0A0",
+    textMuted: "#666666",
+    textInverse: "#1A1A1A",
 
     // Primary (다크모드에서는 밝은 톤 사용)
-    primary: darkColorScale['400'],
-    primaryHover: darkColorScale['300'],
-    primaryActive: darkColorScale['200'],
-    onPrimary: '#1A1A1A',
+    primary: darkColorScale["400"],
+    primaryHover: darkColorScale["300"],
+    primaryActive: darkColorScale["200"],
+    onPrimary: "#1A1A1A",
 
     // 상태 (다크모드용 밝은 버전)
-    success: '#34D399',
-    warning: '#FBBF24',
-    error: '#F87171',
-    info: '#60A5FA',
+    success: "#34D399",
+    warning: "#FBBF24",
+    error: "#F87171",
+    info: "#60A5FA",
   };
 }
 
@@ -178,19 +178,19 @@ export function generateThemePalette(primaryColor: string): ThemePalette {
 export function exportThemeAsCSS(palette: ThemePalette): string {
   const lightVars = Object.entries(palette.light)
     .map(([key, value]) => `  --${camelToKebab(key)}: ${value};`)
-    .join('\n');
+    .join("\n");
 
   const darkVars = Object.entries(palette.dark)
     .map(([key, value]) => `  --${camelToKebab(key)}: ${value};`)
-    .join('\n');
+    .join("\n");
 
   const scaleVars = Object.entries(palette.colorScale)
     .map(([key, value]) => `  --color-primary-${key}: ${value};`)
-    .join('\n');
+    .join("\n");
 
   const darkScaleVars = Object.entries(palette.darkColorScale)
     .map(([key, value]) => `  --color-primary-${key}: ${value};`)
-    .join('\n');
+    .join("\n");
 
   return `/* Light Theme */
 :root {
@@ -221,7 +221,7 @@ ${darkScaleVars}
 }
 
 function camelToKebab(str: string): string {
-  return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
 /**
@@ -230,20 +230,20 @@ function camelToKebab(str: string): string {
 export function exportThemeAsTailwind(_palette: ThemePalette): object {
   return {
     colors: {
-      background: 'var(--background)',
-      'background-alt': 'var(--background-alt)',
-      surface: 'var(--surface)',
-      'surface-alt': 'var(--surface-alt)',
-      border: 'var(--border)',
+      background: "var(--background)",
+      "background-alt": "var(--background-alt)",
+      surface: "var(--surface)",
+      "surface-alt": "var(--surface-alt)",
+      border: "var(--border)",
       primary: {
-        DEFAULT: 'var(--primary)',
-        hover: 'var(--primary-hover)',
-        active: 'var(--primary-active)',
+        DEFAULT: "var(--primary)",
+        hover: "var(--primary-hover)",
+        active: "var(--primary-active)",
       },
       text: {
-        primary: 'var(--text-primary)',
-        secondary: 'var(--text-secondary)',
-        muted: 'var(--text-muted)',
+        primary: "var(--text-primary)",
+        secondary: "var(--text-secondary)",
+        muted: "var(--text-muted)",
       },
     },
   };

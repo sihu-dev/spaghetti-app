@@ -25,7 +25,9 @@ export interface ColorScale {
 /**
  * ColorScale 키 배열
  */
-const SCALE_KEYS: Array<keyof ColorScale> = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+const SCALE_KEYS: Array<keyof ColorScale> = [
+  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+];
 
 /**
  * M3 Tone 매핑 테이블
@@ -98,12 +100,12 @@ export function generateBrandColorRamp(seedColor: string): ColorScale {
 
   // 브랜드 보존 모드: 높은 Tone에서도 채도 유지
   const chromaAdjustment: Record<keyof ColorScale, number> = {
-    50: 0.3,   // 매우 밝은 톤은 채도 감소
+    50: 0.3, // 매우 밝은 톤은 채도 감소
     100: 0.5,
     200: 0.7,
     300: 0.85,
     400: 0.95,
-    500: 1.0,  // 원본 채도 유지
+    500: 1.0, // 원본 채도 유지
     600: 1.0,
     700: 0.95,
     800: 0.9,
@@ -194,7 +196,7 @@ export interface ColorPalette {
 export function generateColorPalette(
   primarySeed: string,
   secondarySeed?: string,
-  tertiarySeed?: string
+  tertiarySeed?: string,
 ): ColorPalette {
   const primaryHct = hexToHct(primarySeed);
 
@@ -239,7 +241,7 @@ export interface SurfaceColors {
 
 export function generateSurfaceColors(
   neutralRamp: ColorScale,
-  isDark: boolean = false
+  isDark: boolean = false,
 ): SurfaceColors {
   if (isDark) {
     return {

@@ -93,7 +93,7 @@ export function useAuth() {
       if (error) throw error;
       return data;
     },
-    []
+    [],
   );
 
   const signUpWithEmail = useCallback(
@@ -106,23 +106,20 @@ export function useAuth() {
       if (error) throw error;
       return data;
     },
-    []
+    [],
   );
 
-  const signInWithOAuth = useCallback(
-    async (provider: "google" | "github") => {
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-      return data;
-    },
-    []
-  );
+  const signInWithOAuth = useCallback(async (provider: "google" | "github") => {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
+    return data;
+  }, []);
 
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();

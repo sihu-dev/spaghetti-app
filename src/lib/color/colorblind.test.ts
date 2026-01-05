@@ -128,26 +128,40 @@ describe("colorblind", () => {
 
   describe("areColorsDistinguishable", () => {
     it("should return true for very different colors", () => {
-      expect(areColorsDistinguishable("#000000", "#FFFFFF", "normal")).toBe(true);
-      expect(areColorsDistinguishable("#FF0000", "#0000FF", "normal")).toBe(true);
+      expect(areColorsDistinguishable("#000000", "#FFFFFF", "normal")).toBe(
+        true,
+      );
+      expect(areColorsDistinguishable("#FF0000", "#0000FF", "normal")).toBe(
+        true,
+      );
     });
 
     it("should return false for identical colors", () => {
-      expect(areColorsDistinguishable("#FF0000", "#FF0000", "normal")).toBe(false);
+      expect(areColorsDistinguishable("#FF0000", "#FF0000", "normal")).toBe(
+        false,
+      );
     });
 
     it("should detect confusion for color blind users", () => {
       // Red and green can be confused by protanopia
-      const result = areColorsDistinguishable("#FF0000", "#00FF00", "protanopia");
+      const result = areColorsDistinguishable(
+        "#FF0000",
+        "#00FF00",
+        "protanopia",
+      );
       // This depends on the threshold, but they should be less distinguishable
       expect(typeof result).toBe("boolean");
     });
 
     it("should use custom threshold", () => {
       // With very low threshold, even similar colors are distinguishable
-      expect(areColorsDistinguishable("#FF0000", "#FF0001", "normal", 1)).toBe(true);
+      expect(areColorsDistinguishable("#FF0000", "#FF0001", "normal", 1)).toBe(
+        true,
+      );
       // With high threshold, similar colors are not distinguishable
-      expect(areColorsDistinguishable("#FF0000", "#FE0000", "normal", 100)).toBe(false);
+      expect(
+        areColorsDistinguishable("#FF0000", "#FE0000", "normal", 100),
+      ).toBe(false);
     });
   });
 

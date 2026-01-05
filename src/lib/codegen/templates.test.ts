@@ -18,7 +18,9 @@ describe("templates", () => {
     it("should have correct structure", () => {
       expect(BUTTON_TEMPLATE.name).toBe("Button");
       expect(BUTTON_TEMPLATE.category).toBe("ui");
-      expect(BUTTON_TEMPLATE.dependencies).toContain("class-variance-authority");
+      expect(BUTTON_TEMPLATE.dependencies).toContain(
+        "class-variance-authority",
+      );
     });
 
     it("should contain valid JSX template", () => {

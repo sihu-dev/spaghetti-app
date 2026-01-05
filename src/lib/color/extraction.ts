@@ -23,7 +23,7 @@ export interface ExtractedColor {
  */
 export function getPixelsFromImageData(
   imageData: ImageData,
-  maxPixels?: number
+  maxPixels?: number,
 ): RgbColor[] {
   const pixels: RgbColor[] = [];
   const data = imageData.data;
@@ -58,7 +58,7 @@ export function getPixelsFromImageData(
 export function kMeansClustering(
   pixels: RgbColor[],
   k: number = 6,
-  maxIterations: number = 20
+  maxIterations: number = 20,
 ): ExtractedColor[] {
   if (pixels.length === 0) return [];
   if (pixels.length < k) k = pixels.length;
@@ -130,7 +130,7 @@ function initializeCentroids(pixels: RgbColor[], k: number): RgbColor[] {
   for (let i = 1; i < k; i++) {
     const distances = pixels.map((pixel) => {
       const minDist = Math.min(
-        ...centroids.map((c) => colorDistance(pixel, c))
+        ...centroids.map((c) => colorDistance(pixel, c)),
       );
       return minDist * minDist;
     });
@@ -156,8 +156,8 @@ function initializeCentroids(pixels: RgbColor[], k: number): RgbColor[] {
 function colorDistance(c1: RgbColor, c2: RgbColor): number {
   return Math.sqrt(
     Math.pow(c1.r - c2.r, 2) +
-    Math.pow(c1.g - c2.g, 2) +
-    Math.pow(c1.b - c2.b, 2)
+      Math.pow(c1.g - c2.g, 2) +
+      Math.pow(c1.b - c2.b, 2),
   );
 }
 
@@ -189,7 +189,7 @@ function calculateCentroid(cluster: RgbColor[]): RgbColor {
       g: acc.g + pixel.g,
       b: acc.b + pixel.b,
     }),
-    { r: 0, g: 0, b: 0 }
+    { r: 0, g: 0, b: 0 },
   );
 
   return {
@@ -205,7 +205,7 @@ function calculateCentroid(cluster: RgbColor[]): RgbColor {
 function hasConverged(
   oldCentroids: RgbColor[],
   newCentroids: RgbColor[],
-  threshold: number = 1
+  threshold: number = 1,
 ): boolean {
   for (let i = 0; i < oldCentroids.length; i++) {
     if (colorDistance(oldCentroids[i], newCentroids[i]) > threshold) {
@@ -223,7 +223,7 @@ export async function extractColorsFromImage(
   options: {
     sampleSize?: number; // 샘플링 크기 (성능 최적화)
     colorCount?: number; // 추출할 색상 수
-  } = {}
+  } = {},
 ): Promise<ExtractedColor[]> {
   const { sampleSize = 200, colorCount = 6 } = options;
 
@@ -231,7 +231,8 @@ export async function extractColorsFromImage(
     const img = new Image();
 
     // blob: URL에는 crossOrigin 설정하지 않음
-    const isDataOrBlob = typeof imageSource === "string" &&
+    const isDataOrBlob =
+      typeof imageSource === "string" &&
       (imageSource.startsWith("blob:") || imageSource.startsWith("data:"));
     if (!isDataOrBlob && typeof imageSource === "string") {
       img.crossOrigin = "anonymous";
@@ -247,7 +248,11 @@ export async function extractColorsFromImage(
       }
 
       // 성능을 위해 이미지 리사이징
-      const scale = Math.min(sampleSize / img.width, sampleSize / img.height, 1);
+      const scale = Math.min(
+        sampleSize / img.width,
+        sampleSize / img.height,
+        1,
+      );
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
 
@@ -276,7 +281,9 @@ export async function extractColorsFromImage(
  * 추출된 색상 중 Primary 후보 선택
  * (채도가 높고 점유율이 높은 색상)
  */
-export function selectPrimaryColor(colors: ExtractedColor[]): ExtractedColor | null {
+export function selectPrimaryColor(
+  colors: ExtractedColor[],
+): ExtractedColor | null {
   if (colors.length === 0) return null;
 
   // 채도(Chroma)와 점유율을 고려한 점수 계산
@@ -299,7 +306,7 @@ export function filterExtractedColors(
     minTone?: number;
     maxTone?: number;
     minChroma?: number;
-  } = {}
+  } = {},
 ): ExtractedColor[] {
   const { minTone = 10, maxTone = 90, minChroma = 10 } = options;
 
@@ -307,6 +314,6 @@ export function filterExtractedColors(
     (color) =>
       color.hct.t >= minTone &&
       color.hct.t <= maxTone &&
-      color.hct.c >= minChroma
+      color.hct.c >= minChroma,
   );
 }

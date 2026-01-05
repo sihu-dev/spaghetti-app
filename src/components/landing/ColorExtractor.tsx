@@ -8,10 +8,7 @@ import {
   selectPrimaryColor,
   type ExtractedColor,
 } from "@/lib/color/extraction";
-import {
-  generateColorRamp,
-  type ColorScale,
-} from "@/lib/color/ramp";
+import { generateColorRamp, type ColorScale } from "@/lib/color/ramp";
 import {
   downloadCssVariables,
   downloadTailwindConfig,
@@ -40,7 +37,9 @@ export function ColorExtractor() {
     setExtractProgress(0);
 
     const progressInterval = setInterval(() => {
-      setExtractProgress((prev) => (prev >= 90 ? prev : prev + Math.random() * 15));
+      setExtractProgress((prev) =>
+        prev >= 90 ? prev : prev + Math.random() * 15,
+      );
     }, 200);
 
     try {
@@ -79,7 +78,7 @@ export function ColorExtractor() {
         rgb: { r: 0, g: 0, b: 0 },
         hct: { h: 0, c: 0, t: 0 },
         percentage: 20,
-      }))
+      })),
     );
   }, []);
 
@@ -109,7 +108,7 @@ export function ColorExtractor() {
           break;
       }
     },
-    [selectedColor, colorRamp, extractedColors]
+    [selectedColor, colorRamp, extractedColors],
   );
 
   const reset = useCallback(() => {
@@ -234,7 +233,12 @@ export function ColorExtractor() {
             <div className="flex items-center gap-4">
               {imagePreview && (
                 <div className="w-12 h-12 rounded-lg relative overflow-hidden">
-                  <Image src={imagePreview} alt="Uploaded" fill className="object-cover" />
+                  <Image
+                    src={imagePreview}
+                    alt="Uploaded"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               )}
               <div>
