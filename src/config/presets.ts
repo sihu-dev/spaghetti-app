@@ -118,7 +118,9 @@ export function getPresetById(id: string): ColorPreset | undefined {
 /**
  * Get presets by category
  */
-export function getPresetsByCategory(category: ColorPreset["category"]): ColorPreset[] {
+export function getPresetsByCategory(
+  category: ColorPreset["category"],
+): ColorPreset[] {
   return EXTENDED_PRESETS.filter((preset) => preset.category === category);
 }
 

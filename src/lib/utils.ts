@@ -44,7 +44,9 @@ export function formatFileSize(bytes: number): string {
 export function generateId(prefix: string = ""): string {
   const timestamp = Date.now().toString(36);
   const randomStr = Math.random().toString(36).substring(2, 8);
-  return prefix ? `${prefix}_${timestamp}${randomStr}` : `${timestamp}${randomStr}`;
+  return prefix
+    ? `${prefix}_${timestamp}${randomStr}`
+    : `${timestamp}${randomStr}`;
 }
 
 /**
@@ -52,7 +54,7 @@ export function generateId(prefix: string = ""): string {
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 

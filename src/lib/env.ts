@@ -40,7 +40,7 @@ export function validateServerEnv(): ServerEnv {
   if (!parsed.success) {
     console.error(
       "❌ Invalid server environment variables:",
-      parsed.error.flatten().fieldErrors
+      parsed.error.flatten().fieldErrors,
     );
     throw new Error("Invalid server environment variables");
   }
@@ -64,7 +64,7 @@ export function validateClientEnv(): ClientEnv {
   if (!parsed.success) {
     console.error(
       "❌ Invalid client environment variables:",
-      parsed.error.flatten().fieldErrors
+      parsed.error.flatten().fieldErrors,
     );
     throw new Error("Invalid client environment variables");
   }

@@ -175,7 +175,7 @@ export const useEditorStore = create<EditorState>()(
         const project: Project = {
           id,
           name: state.currentProjectName,
-          createdAt: state.projects.find(p => p.id === id)?.createdAt || now,
+          createdAt: state.projects.find((p) => p.id === id)?.createdAt || now,
           updatedAt: now,
           selectedColor: state.selectedColor,
           colorRamp: state.colorRamp,
@@ -186,7 +186,7 @@ export const useEditorStore = create<EditorState>()(
           currentProjectId: id,
           projects: [
             project,
-            ...state.projects.filter(p => p.id !== id),
+            ...state.projects.filter((p) => p.id !== id),
           ].slice(0, 20), // Keep max 20 projects
         }));
 
@@ -194,7 +194,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       loadProject: (id) => {
-        const project = get().projects.find(p => p.id === id);
+        const project = get().projects.find((p) => p.id === id);
         if (project) {
           set({
             currentProjectId: project.id,
@@ -210,11 +210,13 @@ export const useEditorStore = create<EditorState>()(
 
       deleteProject: (id) => {
         set((state) => ({
-          projects: state.projects.filter(p => p.id !== id),
-          ...(state.currentProjectId === id ? {
-            currentProjectId: null,
-            currentProjectName: "Untitled Project",
-          } : {}),
+          projects: state.projects.filter((p) => p.id !== id),
+          ...(state.currentProjectId === id
+            ? {
+                currentProjectId: null,
+                currentProjectName: "Untitled Project",
+              }
+            : {}),
         }));
       },
 
@@ -271,10 +273,11 @@ export const useEditorStore = create<EditorState>()(
       canRedo: () => get().historyIndex < get().history.length - 1,
 
       // Reset
-      reset: () => set({
-        ...initialState,
-        projects: get().projects, // Keep projects on reset
-      }),
+      reset: () =>
+        set({
+          ...initialState,
+          projects: get().projects, // Keep projects on reset
+        }),
     }),
     {
       name: "spaghetti-editor",
@@ -286,8 +289,8 @@ export const useEditorStore = create<EditorState>()(
         currentProjectName: state.currentProjectName,
         projects: state.projects,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Selector hooks for optimized re-renders
@@ -300,9 +303,6 @@ export const usePreviewDarkMode = () =>
   useEditorStore((state) => state.previewDarkMode);
 export const useIsExtracting = () =>
   useEditorStore((state) => state.isExtracting);
-export const useProjects = () =>
-  useEditorStore((state) => state.projects);
-export const useCanUndo = () =>
-  useEditorStore((state) => state.canUndo());
-export const useCanRedo = () =>
-  useEditorStore((state) => state.canRedo());
+export const useProjects = () => useEditorStore((state) => state.projects);
+export const useCanUndo = () => useEditorStore((state) => state.canUndo());
+export const useCanRedo = () => useEditorStore((state) => state.canRedo());

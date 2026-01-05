@@ -8,7 +8,7 @@ import { hexToRgb } from "./hct";
 export interface ContrastResult {
   ratio: number;
   ratioText: string;
-  level: 'AAA' | 'AA' | 'AA-Large' | 'Fail';
+  level: "AAA" | "AA" | "AA-Large" | "Fail";
   passAA: boolean;
   passAAA: boolean;
   passAALarge: boolean;
@@ -28,7 +28,7 @@ export interface AccessibilityReport {
 export function getRelativeLuminance(hex: string): number {
   const { r, g, b } = hexToRgb(hex);
 
-  const [rs, gs, bs] = [r, g, b].map(c => {
+  const [rs, gs, bs] = [r, g, b].map((c) => {
     const sRGB = c / 255;
     return sRGB <= 0.03928
       ? sRGB / 12.92
@@ -41,7 +41,10 @@ export function getRelativeLuminance(hex: string): number {
 /**
  * 대비비 계산 - WCAG 2.1 공식
  */
-export function getContrastRatio(foreground: string, background: string): number {
+export function getContrastRatio(
+  foreground: string,
+  background: string,
+): number {
   const l1 = getRelativeLuminance(foreground);
   const l2 = getRelativeLuminance(background);
 
@@ -58,7 +61,14 @@ export function getWCAGLevel(ratio: number): ContrastResult {
   return {
     ratio,
     ratioText: `${ratio.toFixed(2)}:1`,
-    level: ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'AA-Large' : 'Fail',
+    level:
+      ratio >= 7
+        ? "AAA"
+        : ratio >= 4.5
+          ? "AA"
+          : ratio >= 3
+            ? "AA-Large"
+            : "Fail",
     passAA: ratio >= 4.5,
     passAAA: ratio >= 7,
     passAALarge: ratio >= 3,
@@ -69,7 +79,10 @@ export function getWCAGLevel(ratio: number): ContrastResult {
 /**
  * 접근성 리포트 생성
  */
-export function getAccessibilityReport(foreground: string, background: string): AccessibilityReport {
+export function getAccessibilityReport(
+  foreground: string,
+  background: string,
+): AccessibilityReport {
   const ratio = getContrastRatio(foreground, background);
   const contrast = getWCAGLevel(ratio);
 
@@ -77,14 +90,16 @@ export function getAccessibilityReport(foreground: string, background: string): 
 
   if (!contrast.passAA) {
     if (contrast.passAALarge) {
-      suggestions.push('대형 텍스트(18pt+ 또는 14pt bold)에서만 사용 가능');
+      suggestions.push("대형 텍스트(18pt+ 또는 14pt bold)에서만 사용 가능");
     } else {
-      suggestions.push('대비비가 너무 낮습니다. 더 어둡거나 밝은 색상을 선택하세요');
+      suggestions.push(
+        "대비비가 너무 낮습니다. 더 어둡거나 밝은 색상을 선택하세요",
+      );
     }
   }
 
   if (contrast.passAA && !contrast.passAAA) {
-    suggestions.push('AAA 등급을 위해 대비비를 7:1 이상으로 높이세요');
+    suggestions.push("AAA 등급을 위해 대비비를 7:1 이상으로 높이세요");
   }
 
   return { foreground, background, contrast, suggestions };
@@ -94,7 +109,7 @@ export function getAccessibilityReport(foreground: string, background: string): 
  * 컬러 스케일의 접근성 매트릭스 생성
  */
 export function generateAccessibilityMatrix(
-  colorScale: Record<string, string>
+  colorScale: Record<string, string>,
 ): Record<string, Record<string, ContrastResult>> {
   const matrix: Record<string, Record<string, ContrastResult>> = {};
   const keys = Object.keys(colorScale);
@@ -118,16 +133,24 @@ export function getAutoTextColor(backgroundColor: string): {
   ratio: number;
   level: string;
 } {
-  const white = '#FFFFFF';
-  const black = '#000000';
+  const white = "#FFFFFF";
+  const black = "#000000";
 
   const whiteRatio = getContrastRatio(white, backgroundColor);
   const blackRatio = getContrastRatio(black, backgroundColor);
 
   if (whiteRatio > blackRatio) {
-    return { recommended: white, ratio: whiteRatio, level: getWCAGLevel(whiteRatio).level };
+    return {
+      recommended: white,
+      ratio: whiteRatio,
+      level: getWCAGLevel(whiteRatio).level,
+    };
   } else {
-    return { recommended: black, ratio: blackRatio, level: getWCAGLevel(blackRatio).level };
+    return {
+      recommended: black,
+      ratio: blackRatio,
+      level: getWCAGLevel(blackRatio).level,
+    };
   }
 }
 
@@ -137,9 +160,9 @@ export function getAutoTextColor(backgroundColor: string): {
 export function findAccessibleShade(
   colorScale: Record<string, string>,
   backgroundColor: string,
-  targetLevel: 'AA' | 'AAA' = 'AA'
+  targetLevel: "AA" | "AAA" = "AA",
 ): { shade: string; color: string; ratio: number } | null {
-  const minRatio = targetLevel === 'AAA' ? 7 : 4.5;
+  const minRatio = targetLevel === "AAA" ? 7 : 4.5;
 
   const results = Object.entries(colorScale)
     .map(([shade, color]) => ({
@@ -147,7 +170,7 @@ export function findAccessibleShade(
       color,
       ratio: getContrastRatio(color, backgroundColor),
     }))
-    .filter(r => r.ratio >= minRatio)
+    .filter((r) => r.ratio >= minRatio)
     .sort((a, b) => a.ratio - b.ratio);
 
   return results[0] || null;

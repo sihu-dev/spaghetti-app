@@ -100,7 +100,10 @@ export function generateJsonTokens(data: ExportData): string {
           };
           return acc;
         },
-        {} as Record<string, { value: string; type: string; description: string }>
+        {} as Record<
+          string,
+          { value: string; type: string; description: string }
+        >,
       ),
       extracted: data.extractedColors.map((color, index) => ({
         name: `color-${index + 1}`,
@@ -129,7 +132,7 @@ export function generateJsonTokens(data: ExportData): string {
 export function downloadFile(
   content: string,
   filename: string,
-  mimeType: string = "text/plain"
+  mimeType: string = "text/plain",
 ): void {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);

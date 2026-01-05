@@ -323,7 +323,5 @@ export const ALL_TEMPLATES: ComponentTemplate[] = [
 ];
 
 export function getTemplateByName(name: string): ComponentTemplate | undefined {
-  return ALL_TEMPLATES.find(
-    (t) => t.name.toLowerCase() === name.toLowerCase()
-  );
+  return ALL_TEMPLATES.find((t) => t.name.toLowerCase() === name.toLowerCase());
 }

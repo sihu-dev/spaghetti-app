@@ -79,5 +79,7 @@ export type Project = Database["public"]["Tables"]["projects"]["Row"];
 export type NewProject = Database["public"]["Tables"]["projects"]["Insert"];
 export type UpdateProject = Database["public"]["Tables"]["projects"]["Update"];
 
-export type ColorPalette = Database["public"]["Tables"]["color_palettes"]["Row"];
-export type NewColorPalette = Database["public"]["Tables"]["color_palettes"]["Insert"];
+export type ColorPalette =
+  Database["public"]["Tables"]["color_palettes"]["Row"];
+export type NewColorPalette =
+  Database["public"]["Tables"]["color_palettes"]["Insert"];

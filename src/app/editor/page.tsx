@@ -9,18 +9,23 @@ import { useState, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import Link from "next/link";
-import { extractColorsFromImage, selectPrimaryColor, type ExtractedColor } from "@/lib/color/extraction";
-import { generateColorRamp, colorScaleToRecord, type ColorScale } from "@/lib/color/ramp";
+import {
+  extractColorsFromImage,
+  selectPrimaryColor,
+  type ExtractedColor,
+} from "@/lib/color/extraction";
+import {
+  generateColorRamp,
+  colorScaleToRecord,
+  type ColorScale,
+} from "@/lib/color/ramp";
 import {
   downloadCssVariables,
   downloadTailwindConfig,
   type ExportData,
 } from "@/lib/export";
 import { generateDesignSystemZip, type TokenContext } from "@/lib/codegen";
-import {
-  getContrastRatio,
-  getWCAGLevel,
-} from "@/lib/color/accessibility";
+import { getContrastRatio, getWCAGLevel } from "@/lib/color/accessibility";
 import {
   generateThemePalette,
   exportThemeAsCSS,
@@ -70,7 +75,7 @@ export default function EditorPage() {
       { name: "700 on White", fg: colorRamp["700"], bg: "#FFFFFF" },
     ];
 
-    return checks.map(check => ({
+    return checks.map((check) => ({
       ...check,
       result: getWCAGLevel(getContrastRatio(check.fg, check.bg)),
     }));
@@ -96,7 +101,9 @@ export default function EditorPage() {
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setIsDemoMode(false);
-    const oversizedFiles = acceptedFiles.filter(f => f.size > 10 * 1024 * 1024);
+    const oversizedFiles = acceptedFiles.filter(
+      (f) => f.size > 10 * 1024 * 1024,
+    );
     if (oversizedFiles.length > 0) return;
 
     const newImages = acceptedFiles.map((file) => ({
@@ -117,7 +124,9 @@ export default function EditorPage() {
     setExtractError(null);
 
     const progressInterval = setInterval(() => {
-      setExtractProgress(prev => prev >= 90 ? prev : prev + Math.random() * 15);
+      setExtractProgress((prev) =>
+        prev >= 90 ? prev : prev + Math.random() * 15,
+      );
     }, 200);
 
     try {
@@ -145,7 +154,9 @@ export default function EditorPage() {
     } catch (err) {
       clearInterval(progressInterval);
       console.error("Color extraction error:", err);
-      setExtractError(err instanceof Error ? err.message : "색상 추출 중 오류가 발생했습니다");
+      setExtractError(
+        err instanceof Error ? err.message : "색상 추출 중 오류가 발생했습니다",
+      );
       setIsExtracting(false);
     }
   };
@@ -165,12 +176,14 @@ export default function EditorPage() {
     setIsDemoMode(true);
     setSelectedColor(hex);
     setColorRamp(generateColorRamp(hex));
-    setExtractedColors(DEMO_PRESETS.map(p => ({
-      hex: p.hex,
-      rgb: { r: 0, g: 0, b: 0 },
-      hct: { h: 0, c: 0, t: 0 },
-      percentage: 20,
-    })));
+    setExtractedColors(
+      DEMO_PRESETS.map((p) => ({
+        hex: p.hex,
+        rgb: { r: 0, g: 0, b: 0 },
+        hct: { h: 0, c: 0, t: 0 },
+        percentage: 20,
+      })),
+    );
   }, []);
 
   const resetAll = useCallback(() => {
@@ -217,11 +230,33 @@ export default function EditorPage() {
           primaryScale: colorScaleToRecord(colorRamp),
         },
         typography: {
-          fontFamily: "Pretendard, -apple-system, BlinkMacSystemFont, sans-serif",
-          fontSize: { xs: "0.75rem", sm: "0.875rem", base: "1rem", lg: "1.125rem", xl: "1.25rem", "2xl": "1.5rem" },
+          fontFamily:
+            "Pretendard, -apple-system, BlinkMacSystemFont, sans-serif",
+          fontSize: {
+            xs: "0.75rem",
+            sm: "0.875rem",
+            base: "1rem",
+            lg: "1.125rem",
+            xl: "1.25rem",
+            "2xl": "1.5rem",
+          },
         },
-        spacing: { "0": "0", "1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "6": "1.5rem", "8": "2rem" },
-        radius: { none: "0", sm: "0.25rem", md: "0.5rem", lg: "1rem", full: "9999px" },
+        spacing: {
+          "0": "0",
+          "1": "0.25rem",
+          "2": "0.5rem",
+          "3": "0.75rem",
+          "4": "1rem",
+          "6": "1.5rem",
+          "8": "2rem",
+        },
+        radius: {
+          none: "0",
+          sm: "0.25rem",
+          md: "0.5rem",
+          lg: "1rem",
+          full: "9999px",
+        },
       };
 
       const blob = await generateDesignSystemZip({
@@ -247,15 +282,22 @@ export default function EditorPage() {
   }, [selectedColor, colorRamp]);
 
   const canExport = selectedColor && colorRamp;
-  const currentTheme = previewDarkMode ? themePalette?.dark : themePalette?.light;
-  const currentScale = previewDarkMode ? themePalette?.darkColorScale : themePalette?.colorScale;
+  const currentTheme = previewDarkMode
+    ? themePalette?.dark
+    : themePalette?.light;
+  const currentScale = previewDarkMode
+    ? themePalette?.darkColorScale
+    : themePalette?.colorScale;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]" style={dynamicStyles}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5">
         <div className="flex h-14 items-center justify-between px-4 md:px-6">
-          <Link href="/" className="font-bold text-lg text-white tracking-tight">
+          <Link
+            href="/"
+            className="font-bold text-lg text-white tracking-tight"
+          >
             SPAGHETTI
           </Link>
 
@@ -303,9 +345,21 @@ export default function EditorPage() {
               >
                 <input {...getInputProps()} />
                 <div className="space-y-6">
-                  <div className={`mx-auto w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center transition-transform duration-300 ${isDragActive ? 'scale-110' : 'group-hover:scale-105'}`}>
-                    <svg className="w-10 h-10 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  <div
+                    className={`mx-auto w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center transition-transform duration-300 ${isDragActive ? "scale-110" : "group-hover:scale-105"}`}
+                  >
+                    <svg
+                      className="w-10 h-10 text-white/60"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                      />
                     </svg>
                   </div>
                   <div>
@@ -334,7 +388,9 @@ export default function EditorPage() {
                       className="w-6 h-6 rounded-lg shadow-lg transition-transform group-hover:scale-110"
                       style={{ backgroundColor: preset.hex }}
                     />
-                    <span className="text-sm text-white/70 group-hover:text-white transition-colors">{preset.name}</span>
+                    <span className="text-sm text-white/70 group-hover:text-white transition-colors">
+                      {preset.name}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -348,19 +404,38 @@ export default function EditorPage() {
             <div className="text-center max-w-md">
               <div className="relative w-32 h-32 mx-auto mb-8">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
                   <circle
-                    cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="4"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="4"
+                    strokeLinecap="round"
                     strokeDasharray={`${extractProgress * 2.83} 283`}
                     className="transition-all duration-300"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">{Math.round(extractProgress)}%</span>
+                  <span className="text-2xl font-bold text-white">
+                    {Math.round(extractProgress)}%
+                  </span>
                 </div>
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">컬러 분석 중</h2>
-              <p className="text-white/50">HCT 알고리즘으로 이미지를 분석하고 있습니다</p>
+              <h2 className="text-xl font-bold text-white mb-2">
+                컬러 분석 중
+              </h2>
+              <p className="text-white/50">
+                HCT 알고리즘으로 이미지를 분석하고 있습니다
+              </p>
             </div>
           </div>
         )}
@@ -370,14 +445,27 @@ export default function EditorPage() {
           <div className="flex items-center justify-center min-h-[calc(100vh-56px)] px-6">
             <div className="text-center max-w-md">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
-                <svg className="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-10 h-10 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
               <h2 className="text-xl font-bold text-white mb-2">오류 발생</h2>
               <p className="text-white/50 mb-6">{extractError}</p>
               <button
-                onClick={() => { setExtractError(null); setImages([]); }}
+                onClick={() => {
+                  setExtractError(null);
+                  setImages([]);
+                }}
                 className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
               >
                 다시 시도
@@ -417,19 +505,30 @@ export default function EditorPage() {
                 {sidebarTab === "colors" && (
                   <div className="space-y-8">
                     <div>
-                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">Primary</div>
+                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
+                        Primary
+                      </div>
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl shadow-2xl" style={{ backgroundColor: selectedColor }} />
+                        <div
+                          className="w-16 h-16 rounded-2xl shadow-2xl"
+                          style={{ backgroundColor: selectedColor }}
+                        />
                         <div>
-                          <div className="text-white font-mono text-sm">{selectedColor.toUpperCase()}</div>
-                          <div className="text-white/40 text-xs mt-1">{isDemoMode ? "데모" : "추출됨"}</div>
+                          <div className="text-white font-mono text-sm">
+                            {selectedColor.toUpperCase()}
+                          </div>
+                          <div className="text-white/40 text-xs mt-1">
+                            {isDemoMode ? "데모" : "추출됨"}
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {extractedColors.length > 0 && (
                       <div>
-                        <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">팔레트</div>
+                        <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
+                          팔레트
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {extractedColors.map((color) => (
                             <button
@@ -448,14 +547,26 @@ export default function EditorPage() {
                     )}
 
                     <div>
-                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">컬러 램프</div>
+                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
+                        컬러 램프
+                      </div>
                       <div className="space-y-1">
                         {Object.entries(colorRamp).map(([key, value]) => (
-                          <div key={key} className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg flex-shrink-0 transition-transform group-hover:scale-110" style={{ backgroundColor: value }} />
+                          <div
+                            key={key}
+                            className="flex items-center gap-3 group"
+                          >
+                            <div
+                              className="w-8 h-8 rounded-lg flex-shrink-0 transition-transform group-hover:scale-110"
+                              style={{ backgroundColor: value }}
+                            />
                             <div className="flex-1 flex justify-between items-center">
-                              <span className="text-xs text-white/60">{key}</span>
-                              <span className="text-xs text-white/30 font-mono">{value}</span>
+                              <span className="text-xs text-white/60">
+                                {key}
+                              </span>
+                              <span className="text-xs text-white/30 font-mono">
+                                {value}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -468,28 +579,48 @@ export default function EditorPage() {
                 {sidebarTab === "accessibility" && accessibilityData && (
                   <div className="space-y-6">
                     <div>
-                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">WCAG 대비비 검사</div>
+                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
+                        WCAG 대비비 검사
+                      </div>
                       <div className="space-y-3">
                         {accessibilityData.map((check) => (
-                          <div key={check.name} className="bg-white/5 rounded-xl p-4">
+                          <div
+                            key={check.name}
+                            className="bg-white/5 rounded-xl p-4"
+                          >
                             <div className="flex items-center justify-between mb-3">
-                              <span className="text-sm text-white/70">{check.name}</span>
-                              <span className={`text-xs font-bold px-2 py-1 rounded ${
-                                check.result.level === 'AAA' ? 'bg-green-500/20 text-green-400' :
-                                check.result.level === 'AA' ? 'bg-blue-500/20 text-blue-400' :
-                                check.result.level === 'AA-Large' ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-red-500/20 text-red-400'
-                              }`}>
+                              <span className="text-sm text-white/70">
+                                {check.name}
+                              </span>
+                              <span
+                                className={`text-xs font-bold px-2 py-1 rounded ${
+                                  check.result.level === "AAA"
+                                    ? "bg-green-500/20 text-green-400"
+                                    : check.result.level === "AA"
+                                      ? "bg-blue-500/20 text-blue-400"
+                                      : check.result.level === "AA-Large"
+                                        ? "bg-yellow-500/20 text-yellow-400"
+                                        : "bg-red-500/20 text-red-400"
+                                }`}
+                              >
                                 {check.result.level}
                               </span>
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded" style={{ backgroundColor: check.fg }} />
+                                <div
+                                  className="w-6 h-6 rounded"
+                                  style={{ backgroundColor: check.fg }}
+                                />
                                 <span className="text-white/30">→</span>
-                                <div className="w-6 h-6 rounded border border-white/20" style={{ backgroundColor: check.bg }} />
+                                <div
+                                  className="w-6 h-6 rounded border border-white/20"
+                                  style={{ backgroundColor: check.bg }}
+                                />
                               </div>
-                              <span className="text-sm text-white/50 font-mono">{check.result.ratioText}</span>
+                              <span className="text-sm text-white/50 font-mono">
+                                {check.result.ratioText}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -497,7 +628,9 @@ export default function EditorPage() {
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-4">
-                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">기준</div>
+                      <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">
+                        기준
+                      </div>
                       <div className="space-y-2 text-xs text-white/50">
                         <div className="flex justify-between">
                           <span>AAA (최고)</span>
@@ -520,27 +653,44 @@ export default function EditorPage() {
                 {sidebarTab === "darkmode" && themePalette && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-white/70">미리보기 모드</span>
+                      <span className="text-sm text-white/70">
+                        미리보기 모드
+                      </span>
                       <button
                         onClick={() => setPreviewDarkMode(!previewDarkMode)}
-                        className={`relative w-14 h-7 rounded-full transition-colors ${previewDarkMode ? 'bg-white' : 'bg-white/20'}`}
+                        className={`relative w-14 h-7 rounded-full transition-colors ${previewDarkMode ? "bg-white" : "bg-white/20"}`}
                       >
-                        <div className={`absolute top-1 w-5 h-5 rounded-full transition-all ${previewDarkMode ? 'left-8 bg-[#0A0A0A]' : 'left-1 bg-white'}`} />
+                        <div
+                          className={`absolute top-1 w-5 h-5 rounded-full transition-all ${previewDarkMode ? "left-8 bg-[#0A0A0A]" : "left-1 bg-white"}`}
+                        />
                       </button>
                     </div>
 
                     <div>
                       <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
-                        {previewDarkMode ? '다크 테마' : '라이트 테마'}
+                        {previewDarkMode ? "다크 테마" : "라이트 테마"}
                       </div>
                       <div className="space-y-2">
-                        {currentTheme && Object.entries(currentTheme).slice(0, 8).map(([key, value]) => (
-                          <div key={key} className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded border border-white/10" style={{ backgroundColor: value }} />
-                            <span className="text-xs text-white/50 flex-1">{key}</span>
-                            <span className="text-xs text-white/30 font-mono">{value}</span>
-                          </div>
-                        ))}
+                        {currentTheme &&
+                          Object.entries(currentTheme)
+                            .slice(0, 8)
+                            .map(([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex items-center gap-3"
+                              >
+                                <div
+                                  className="w-6 h-6 rounded border border-white/10"
+                                  style={{ backgroundColor: value }}
+                                />
+                                <span className="text-xs text-white/50 flex-1">
+                                  {key}
+                                </span>
+                                <span className="text-xs text-white/30 font-mono">
+                                  {value}
+                                </span>
+                              </div>
+                            ))}
                       </div>
                     </div>
 
@@ -557,19 +707,31 @@ export default function EditorPage() {
               {/* Export Buttons */}
               <div className="p-4 border-t border-white/5 space-y-2">
                 <button
-                  onClick={() => { const d = getExportData(); if(d) downloadCssVariables(d); }}
+                  onClick={() => {
+                    const d = getExportData();
+                    if (d) downloadCssVariables(d);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-sm"
                 >
-                  <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-mono">CSS</span>
+                  <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-mono">
+                    CSS
+                  </span>
                   CSS Variables
                 </button>
                 <button
-                  onClick={() => { const d = getExportData(); if(d) downloadTailwindConfig(d); }}
+                  onClick={() => {
+                    const d = getExportData();
+                    if (d) downloadTailwindConfig(d);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-sm"
                 >
                   <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#38BDF8]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 6c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.31.74 1.91 1.35.98 1 2.09 2.15 4.59 2.15 2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.3-.74-1.91-1.35C15.61 7.15 14.51 6 12 6zm-5 6c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.3.74 1.91 1.35C8.39 16.85 9.49 18 12 18c2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.3-.74-1.91-1.35C10.61 13.15 9.51 12 7 12z"/>
+                    <svg
+                      className="w-4 h-4 text-[#38BDF8]"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 6c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.31.74 1.91 1.35.98 1 2.09 2.15 4.59 2.15 2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.3-.74-1.91-1.35C15.61 7.15 14.51 6 12 6zm-5 6c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.3.74 1.91 1.35C8.39 16.85 9.49 18 12 18c2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.3-.74-1.91-1.35C10.61 13.15 9.51 12 7 12z" />
                     </svg>
                   </span>
                   Tailwind
@@ -578,16 +740,27 @@ export default function EditorPage() {
             </div>
 
             {/* Right Panel - Preview */}
-            <div className="flex-1 p-6 md:p-10 overflow-auto" style={{
-              backgroundColor: previewDarkMode ? '#0A0A0A' : '#F5F5F5'
-            }}>
+            <div
+              className="flex-1 p-6 md:p-10 overflow-auto"
+              style={{
+                backgroundColor: previewDarkMode ? "#0A0A0A" : "#F5F5F5",
+              }}
+            >
               {/* Uploaded Images */}
               {images.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center gap-4 overflow-x-auto pb-2">
                     {images.map((img) => (
-                      <div key={img.id} className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-white/10">
-                        <Image src={img.preview} alt="Uploaded" fill className="object-cover" />
+                      <div
+                        key={img.id}
+                        className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-white/10"
+                      >
+                        <Image
+                          src={img.preview}
+                          alt="Uploaded"
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                     ))}
                   </div>
@@ -606,8 +779,12 @@ export default function EditorPage() {
                     onClick={() => setPreviewTab(tab.key)}
                     className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       previewTab === tab.key
-                        ? previewDarkMode ? "bg-white text-black" : "bg-[#1A1A1A] text-white"
-                        : previewDarkMode ? "bg-white/10 text-white/60 hover:bg-white/20" : "bg-black/5 text-black/60 hover:bg-black/10"
+                        ? previewDarkMode
+                          ? "bg-white text-black"
+                          : "bg-[#1A1A1A] text-white"
+                        : previewDarkMode
+                          ? "bg-white/10 text-white/60 hover:bg-white/20"
+                          : "bg-black/5 text-black/60 hover:bg-black/10"
                     }`}
                   >
                     {tab.label}
@@ -616,11 +793,17 @@ export default function EditorPage() {
               </div>
 
               {/* Preview Content */}
-              <div className={`rounded-3xl p-8 md:p-12 ${previewDarkMode ? 'bg-[#1A1A1A]' : 'bg-white'}`}>
+              <div
+                className={`rounded-3xl p-8 md:p-12 ${previewDarkMode ? "bg-[#1A1A1A]" : "bg-white"}`}
+              >
                 {previewTab === "buttons" && currentScale && (
                   <div className="space-y-10">
                     <div>
-                      <div className={`text-xs font-medium uppercase tracking-wider mb-4 ${previewDarkMode ? 'text-white/40' : 'text-[#999]'}`}>Solid</div>
+                      <div
+                        className={`text-xs font-medium uppercase tracking-wider mb-4 ${previewDarkMode ? "text-white/40" : "text-[#999]"}`}
+                      >
+                        Solid
+                      </div>
                       <div className="flex flex-wrap gap-3">
                         {(["500", "600", "700"] as const).map((shade) => (
                           <button
@@ -634,17 +817,27 @@ export default function EditorPage() {
                       </div>
                     </div>
                     <div>
-                      <div className={`text-xs font-medium uppercase tracking-wider mb-4 ${previewDarkMode ? 'text-white/40' : 'text-[#999]'}`}>Outline</div>
+                      <div
+                        className={`text-xs font-medium uppercase tracking-wider mb-4 ${previewDarkMode ? "text-white/40" : "text-[#999]"}`}
+                      >
+                        Outline
+                      </div>
                       <div className="flex flex-wrap gap-3">
                         <button
                           className="px-6 py-3 rounded-xl text-sm font-semibold border-2 transition-all hover:scale-105"
-                          style={{ borderColor: currentScale["500"], color: currentScale["500"] }}
+                          style={{
+                            borderColor: currentScale["500"],
+                            color: currentScale["500"],
+                          }}
                         >
                           Outlined
                         </button>
                         <button
                           className="px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-                          style={{ backgroundColor: `${currentScale["500"]}20`, color: currentScale["500"] }}
+                          style={{
+                            backgroundColor: `${currentScale["500"]}20`,
+                            color: currentScale["500"],
+                          }}
                         >
                           Ghost
                         </button>
@@ -656,19 +849,34 @@ export default function EditorPage() {
                 {previewTab === "forms" && currentScale && (
                   <div className="max-w-md space-y-6">
                     <div>
-                      <label className={`block text-sm font-medium mb-2 ${previewDarkMode ? 'text-white' : 'text-[#333]'}`}>이메일</label>
+                      <label
+                        className={`block text-sm font-medium mb-2 ${previewDarkMode ? "text-white" : "text-[#333]"}`}
+                      >
+                        이메일
+                      </label>
                       <input
                         type="email"
                         placeholder="example@email.com"
                         className={`w-full px-4 py-3 rounded-xl border-2 text-sm focus:outline-none transition-all ${
-                          previewDarkMode ? 'bg-white/5 text-white border-white/10 placeholder:text-white/30' : 'bg-white text-black placeholder:text-black/30'
+                          previewDarkMode
+                            ? "bg-white/5 text-white border-white/10 placeholder:text-white/30"
+                            : "bg-white text-black placeholder:text-black/30"
                         }`}
                         style={{ borderColor: `${currentScale["500"]}40` }}
                       />
                     </div>
                     <div className="flex items-center gap-3">
-                      <input type="checkbox" className="w-5 h-5 rounded" style={{ accentColor: currentScale["500"] }} defaultChecked />
-                      <span className={`text-sm ${previewDarkMode ? 'text-white/70' : 'text-[#666]'}`}>이용약관에 동의합니다</span>
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 rounded"
+                        style={{ accentColor: currentScale["500"] }}
+                        defaultChecked
+                      />
+                      <span
+                        className={`text-sm ${previewDarkMode ? "text-white/70" : "text-[#666]"}`}
+                      >
+                        이용약관에 동의합니다
+                      </span>
                     </div>
                     <button
                       className="w-full py-4 rounded-xl text-white font-semibold transition-all hover:opacity-90"
@@ -681,11 +889,24 @@ export default function EditorPage() {
 
                 {previewTab === "cards" && currentScale && (
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className={`rounded-2xl overflow-hidden hover:shadow-xl transition-shadow ${previewDarkMode ? 'bg-white/5 border border-white/10' : 'border border-[#E5E5E5]'}`}>
-                      <div className="h-32" style={{ backgroundColor: `${currentScale["500"]}20` }} />
+                    <div
+                      className={`rounded-2xl overflow-hidden hover:shadow-xl transition-shadow ${previewDarkMode ? "bg-white/5 border border-white/10" : "border border-[#E5E5E5]"}`}
+                    >
+                      <div
+                        className="h-32"
+                        style={{ backgroundColor: `${currentScale["500"]}20` }}
+                      />
                       <div className="p-6">
-                        <h3 className={`font-bold text-lg mb-2 ${previewDarkMode ? 'text-white' : 'text-[#1A1A1A]'}`}>카드 타이틀</h3>
-                        <p className={`text-sm mb-4 ${previewDarkMode ? 'text-white/60' : 'text-[#666]'}`}>카드 설명 텍스트입니다.</p>
+                        <h3
+                          className={`font-bold text-lg mb-2 ${previewDarkMode ? "text-white" : "text-[#1A1A1A]"}`}
+                        >
+                          카드 타이틀
+                        </h3>
+                        <p
+                          className={`text-sm mb-4 ${previewDarkMode ? "text-white/60" : "text-[#666]"}`}
+                        >
+                          카드 설명 텍스트입니다.
+                        </p>
                         <button
                           className="w-full py-3 rounded-xl text-white font-medium"
                           style={{ backgroundColor: currentScale["500"] }}
@@ -694,15 +915,23 @@ export default function EditorPage() {
                         </button>
                       </div>
                     </div>
-                    <div className="rounded-2xl p-6 text-white" style={{ backgroundColor: currentScale["500"] }}>
+                    <div
+                      className="rounded-2xl p-6 text-white"
+                      style={{ backgroundColor: currentScale["500"] }}
+                    >
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-full bg-white/20" />
                         <div>
                           <div className="font-bold">Featured</div>
-                          <div className="text-sm text-white/70">Primary 배경</div>
+                          <div className="text-sm text-white/70">
+                            Primary 배경
+                          </div>
                         </div>
                       </div>
-                      <button className="w-full py-3 rounded-xl bg-white font-medium" style={{ color: currentScale["500"] }}>
+                      <button
+                        className="w-full py-3 rounded-xl bg-white font-medium"
+                        style={{ color: currentScale["500"] }}
+                      >
                         Learn More
                       </button>
                     </div>

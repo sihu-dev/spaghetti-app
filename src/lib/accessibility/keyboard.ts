@@ -39,7 +39,8 @@ export function useKeyboardShortcuts(shortcuts: ShortcutHandler[]) {
         const keyMatch = e.key.toLowerCase() === shortcut.key.toLowerCase();
         const modifiers = shortcut.modifiers || [];
 
-        const ctrlMatch = modifiers.includes("ctrl") === (e.ctrlKey || e.metaKey);
+        const ctrlMatch =
+          modifiers.includes("ctrl") === (e.ctrlKey || e.metaKey);
         const shiftMatch = modifiers.includes("shift") === e.shiftKey;
         const altMatch = modifiers.includes("alt") === e.altKey;
 
@@ -67,7 +68,7 @@ export function useFocusTrap(isActive: boolean) {
 
     const container = containerRef.current;
     const focusableElements = container.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
 
     if (focusableElements.length === 0) return;
@@ -110,7 +111,7 @@ export function useArrowNavigation<T extends HTMLElement>(
     loop?: boolean;
     orientation?: "horizontal" | "vertical" | "both";
     onSelect?: (index: number) => void;
-  }
+  },
 ) {
   const containerRef = useRef<T>(null);
   const currentIndexRef = useRef(0);
@@ -146,11 +147,13 @@ export function useArrowNavigation<T extends HTMLElement>(
       // Focus the new element
       const container = containerRef.current;
       if (container) {
-        const items = container.querySelectorAll<HTMLElement>('[role="option"], [role="menuitem"], [data-nav-item]');
+        const items = container.querySelectorAll<HTMLElement>(
+          '[role="option"], [role="menuitem"], [data-nav-item]',
+        );
         items[newIndex]?.focus();
       }
     },
-    [itemsLength, loop, orientation]
+    [itemsLength, loop, orientation],
   );
 
   useEffect(() => {
@@ -194,21 +197,24 @@ export function useArrowNavigation<T extends HTMLElement>(
  * Hook to announce messages to screen readers
  */
 export function useAnnounce() {
-  const announce = useCallback((message: string, priority: "polite" | "assertive" = "polite") => {
-    const announcement = document.createElement("div");
-    announcement.setAttribute("role", "status");
-    announcement.setAttribute("aria-live", priority);
-    announcement.setAttribute("aria-atomic", "true");
-    announcement.className = "sr-only";
-    announcement.textContent = message;
+  const announce = useCallback(
+    (message: string, priority: "polite" | "assertive" = "polite") => {
+      const announcement = document.createElement("div");
+      announcement.setAttribute("role", "status");
+      announcement.setAttribute("aria-live", priority);
+      announcement.setAttribute("aria-atomic", "true");
+      announcement.className = "sr-only";
+      announcement.textContent = message;
 
-    document.body.appendChild(announcement);
+      document.body.appendChild(announcement);
 
-    // Remove after announcement
-    setTimeout(() => {
-      document.body.removeChild(announcement);
-    }, 1000);
-  }, []);
+      // Remove after announcement
+      setTimeout(() => {
+        document.body.removeChild(announcement);
+      }, 1000);
+    },
+    [],
+  );
 
   return announce;
 }
@@ -227,7 +233,7 @@ export interface SkipLinkProps {
 export function getColorSwatchAriaProps(
   colorName: string,
   hexValue: string,
-  isSelected: boolean
+  isSelected: boolean,
 ) {
   return {
     role: "option" as const,
@@ -243,7 +249,7 @@ export function getColorSwatchAriaProps(
 export function getTabAriaProps(
   tabId: string,
   panelId: string,
-  isSelected: boolean
+  isSelected: boolean,
 ) {
   return {
     role: "tab" as const,

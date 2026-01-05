@@ -42,7 +42,7 @@ export function createColorShareUrl(
     darkMode?: boolean;
     tab?: string;
     preview?: string;
-  }
+  },
 ): string {
   const url = new URL(baseUrl);
   url.searchParams.set("color", color.replace("#", ""));

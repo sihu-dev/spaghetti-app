@@ -226,7 +226,9 @@ describe("Code Generator", () => {
         framework: "react",
       });
 
-      const componentFiles = files.filter((f) => f.path.includes("components/ui/"));
+      const componentFiles = files.filter((f) =>
+        f.path.includes("components/ui/"),
+      );
 
       expect(componentFiles.length).toBeGreaterThan(0);
     });

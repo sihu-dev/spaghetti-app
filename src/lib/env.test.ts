@@ -76,9 +76,12 @@ describe("env", () => {
     });
 
     it("should accept valid Supabase anon key", () => {
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
       const env = validateClientEnv();
-      expect(env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9");
+      expect(env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+      );
     });
   });
 

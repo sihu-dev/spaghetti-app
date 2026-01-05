@@ -48,7 +48,10 @@ export async function POST(request: NextRequest) {
       description: style.description,
     }));
 
-    const response: FigmaApiResponse<{ imported: number; styles: typeof processedStyles }> = {
+    const response: FigmaApiResponse<{
+      imported: number;
+      styles: typeof processedStyles;
+    }> = {
       success: true,
       data: {
         imported: processedStyles.length,
@@ -76,7 +79,8 @@ export async function PUT(request: NextRequest) {
     if (!body.projectName || !body.primaryColor || !body.colorScale) {
       const errorResponse: FigmaApiResponse<null> = {
         success: false,
-        error: "Invalid payload: projectName, primaryColor, and colorScale are required",
+        error:
+          "Invalid payload: projectName, primaryColor, and colorScale are required",
       };
       return NextResponse.json(errorResponse, { status: 400 });
     }

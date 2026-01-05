@@ -8,13 +8,13 @@
  */
 export type ColorBlindnessType =
   | "normal"
-  | "protanopia"     // Red-blind
-  | "deuteranopia"   // Green-blind
-  | "tritanopia"     // Blue-blind
-  | "protanomaly"    // Red-weak
-  | "deuteranomaly"  // Green-weak
-  | "tritanomaly"    // Blue-weak
-  | "achromatopsia"  // Total color blindness
+  | "protanopia" // Red-blind
+  | "deuteranopia" // Green-blind
+  | "tritanopia" // Blue-blind
+  | "protanomaly" // Red-weak
+  | "deuteranomaly" // Green-weak
+  | "tritanomaly" // Blue-weak
+  | "achromatopsia" // Total color blindness
   | "achromatomaly"; // Partial color blindness
 
 export interface ColorBlindnessInfo {
@@ -125,9 +125,9 @@ const SIMULATION_MATRICES: Record<ColorBlindnessType, number[][]> = {
     [0.299, 0.587, 0.114],
   ],
   achromatomaly: [
-    [0.618, 0.320, 0.062],
+    [0.618, 0.32, 0.062],
     [0.163, 0.775, 0.062],
-    [0.163, 0.320, 0.516],
+    [0.163, 0.32, 0.516],
   ],
 };
 
@@ -148,7 +148,9 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
  */
 function rgbToHex(r: number, g: number, b: number): string {
   const toHex = (n: number) =>
-    Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
+    Math.max(0, Math.min(255, Math.round(n)))
+      .toString(16)
+      .padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 }
 
@@ -159,7 +161,7 @@ function applyMatrix(
   r: number,
   g: number,
   b: number,
-  matrix: number[][]
+  matrix: number[][],
 ): { r: number; g: number; b: number } {
   return {
     r: r * matrix[0][0] + g * matrix[0][1] + b * matrix[0][2],
@@ -176,7 +178,7 @@ function applyMatrix(
  */
 export function simulateColorBlindness(
   hex: string,
-  type: ColorBlindnessType
+  type: ColorBlindnessType,
 ): string {
   if (type === "normal") return hex.toUpperCase();
 
@@ -192,7 +194,7 @@ export function simulateColorBlindness(
  */
 export function simulateColorScale(
   scale: Record<string, string>,
-  type: ColorBlindnessType
+  type: ColorBlindnessType,
 ): Record<string, string> {
   const result: Record<string, string> = {};
   for (const [key, value] of Object.entries(scale)) {
@@ -204,7 +206,9 @@ export function simulateColorScale(
 /**
  * Get all simulations for a single color
  */
-export function getAllSimulations(hex: string): Record<ColorBlindnessType, string> {
+export function getAllSimulations(
+  hex: string,
+): Record<ColorBlindnessType, string> {
   const result: Record<string, string> = {};
   for (const type of Object.keys(SIMULATION_MATRICES) as ColorBlindnessType[]) {
     result[type] = simulateColorBlindness(hex, type);
@@ -220,7 +224,7 @@ export function areColorsDistinguishable(
   hex1: string,
   hex2: string,
   type: ColorBlindnessType,
-  threshold = 30
+  threshold = 30,
 ): boolean {
   const sim1 = simulateColorBlindness(hex1, type);
   const sim2 = simulateColorBlindness(hex2, type);
@@ -230,8 +234,8 @@ export function areColorsDistinguishable(
 
   const distance = Math.sqrt(
     Math.pow(rgb1.r - rgb2.r, 2) +
-    Math.pow(rgb1.g - rgb2.g, 2) +
-    Math.pow(rgb1.b - rgb2.b, 2)
+      Math.pow(rgb1.g - rgb2.g, 2) +
+      Math.pow(rgb1.b - rgb2.b, 2),
   );
 
   return distance >= threshold;
@@ -240,9 +244,7 @@ export function areColorsDistinguishable(
 /**
  * Generate a color blindness safe palette report
  */
-export function generateAccessibilityReport(
-  colors: string[]
-): {
+export function generateAccessibilityReport(colors: string[]): {
   type: ColorBlindnessType;
   name: string;
   issues: { color1: string; color2: string }[];

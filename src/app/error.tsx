@@ -36,7 +36,8 @@ export default function Error({
           문제가 발생했습니다
         </h2>
         <p className="text-white/50 mb-6">
-          {error.message || "예기치 않은 오류가 발생했습니다. 다시 시도해 주세요."}
+          {error.message ||
+            "예기치 않은 오류가 발생했습니다. 다시 시도해 주세요."}
         </p>
         {error.digest && (
           <p className="text-white/30 text-xs mb-4 font-mono">

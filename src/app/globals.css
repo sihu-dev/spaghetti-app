@@ -7,11 +7,13 @@
 
 :root {
   /* Typography */
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
-    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
-    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+    "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
 
   /* Background */
@@ -125,30 +127,30 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1A1A1A;
+    --background: #1a1a1a;
     --background-secondary: #242424;
-    --foreground: #F5F5F5;
+    --foreground: #f5f5f5;
 
     --card: #242424;
-    --card-foreground: #F5F5F5;
-    --card-hover: #2A2A2A;
+    --card-foreground: #f5f5f5;
+    --card-hover: #2a2a2a;
 
-    --primary: #8B9A7E;
-    --primary-foreground: #1A1A1A;
-    --primary-hover: #A8B49E;
+    --primary: #8b9a7e;
+    --primary-foreground: #1a1a1a;
+    --primary-hover: #a8b49e;
 
-    --secondary: #2A2A2A;
-    --secondary-foreground: #F5F5F5;
+    --secondary: #2a2a2a;
+    --secondary-foreground: #f5f5f5;
 
     --muted: #333333;
-    --muted-foreground: #9A9A9A;
+    --muted-foreground: #9a9a9a;
 
-    --accent: #B99A7D;
-    --accent-foreground: #1A1A1A;
+    --accent: #b99a7d;
+    --accent-foreground: #1a1a1a;
 
     --border: #333333;
     --input: #333333;
-    --ring: #8B9A7E;
+    --ring: #8b9a7e;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -164,7 +166,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -255,8 +261,13 @@ body {
 
 /* Floating Animation */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .float-animation {
@@ -265,8 +276,14 @@ body {
 
 /* Fade In Animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
